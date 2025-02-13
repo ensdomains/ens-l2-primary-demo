@@ -43,7 +43,7 @@ const IndividualChainDisplay = ({
     targetChain: chain,
     targetAddress: getChainContractAddress({
       chain,
-      contract: "l2ReverseResolver",
+      contract: "l2ReverseRegistrar",
     }),
     ...(isL2
       ? {

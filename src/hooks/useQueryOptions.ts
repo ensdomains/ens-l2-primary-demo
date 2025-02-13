@@ -94,7 +94,8 @@ export function createQueryKey<
 // ensure that keyOnly is set to true if queryFn is not provided
 type RequireKeyOnlyAssert<TQueryFn> = [TQueryFn] extends [undefined]
   ? { keyOnly: true }
-  : {};
+  : // biome-ignore lint/complexity/noBannedTypes: <explanation>
+    {};
 type GetConfig<T> = T extends (config: infer F) => unknown ? F : never;
 
 export function useQueryOptions<

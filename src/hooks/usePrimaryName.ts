@@ -20,7 +20,6 @@ import {
   dnsEncodeName,
   getReverseNamespace,
   getReverseNode,
-  getReverseNodeHash,
 } from "../utils/name";
 import type { SupportedChain } from "../wagmi";
 import { useQueryOptions } from "./useQueryOptions";
@@ -55,6 +54,9 @@ type QueryKey<TParams extends UsePrimaryNameParameters> = CreateQueryKey<
   "standard"
 >;
 
+const standaloneReverseRegistrarAbi = parseAbi([
+  "function nameForAddr(address addr) external view returns (string)",
+]);
 const reverseResolverAbi = parseAbi([
   "function name(bytes32 node) external view returns (string memory)",
 ]);
@@ -92,7 +94,7 @@ export const getPrimaryNameQueryFn =
       if (!forceDefault) return getEnsName(client, { address, ...params });
 
       console.log("trying to read default resolver");
-      const defaultResolver = await readContract(client, {
+      const defaultRegistrarAddress = await readContract(client, {
         address: getChainContractAddress({
           chain: currentChain,
           contract: "ensRegistry",
@@ -101,12 +103,12 @@ export const getPrimaryNameQueryFn =
         functionName: "resolver",
         args: [namehash(getReverseNamespace({ ns: "default" }))],
       });
-      console.log("default resolver", defaultResolver);
+      console.log("default registrar", defaultRegistrarAddress);
       return readContract(client, {
-        address: defaultResolver,
-        abi: reverseResolverAbi,
-        functionName: "name",
-        args: [getReverseNodeHash(address, { ns: "default" })],
+        address: defaultRegistrarAddress,
+        abi: standaloneReverseRegistrarAbi,
+        functionName: "nameForAddr",
+        args: [address],
       });
     }
 
@@ -115,16 +117,16 @@ export const getPrimaryNameQueryFn =
     });
 
     if (directQuery) {
-      const resolverAddress = getChainContractAddress({
+      const registrarAddress = getChainContractAddress({
         chain: currentChain,
-        contract: "l2ReverseResolver",
+        contract: "l2ReverseRegistrar",
       });
       const client = config.getClient({ chainId: currentChain.id });
       return readContract(client, {
-        address: resolverAddress,
-        abi: reverseResolverAbi,
-        functionName: "name",
-        args: [namehash(reverseNode)],
+        address: registrarAddress,
+        abi: standaloneReverseRegistrarAbi,
+        functionName: "nameForAddr",
+        args: [address],
       });
     }
 

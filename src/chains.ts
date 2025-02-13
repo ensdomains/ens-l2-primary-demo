@@ -57,9 +57,9 @@ export const sepolia = {
   sourceId: undefined,
   contracts: {
     ...sepoliaViem.contracts,
-    l2ReverseResolver: {
+    l2ReverseRegistrar: {
       // this is actually the default reverse resolver but just for convenience
-      address: "0xB5cd6c346D7084d69B9e9ADbe3f7e4C6ab714c4c",
+      address: "0x089C3F89e6eE8bAc40aFA96267a1c84003109d1b",
     },
   },
   rpc: {
@@ -77,10 +77,10 @@ export const baseSepolia = {
   contracts: {
     ...baseSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x004507C664E56c5Ee12Da7dBebF84E7c44ebF311",
+      address: "0x27cDac6782deCA38795A060Dc4683F9EBb6E7e56",
     },
-    l2ReverseResolver: {
-      address: "0xa12159e5131b1eEf6B4857EEE3e1954744b5033A",
+    l2ReverseRegistrar: {
+      address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
     },
   },
   rpc: {
@@ -101,10 +101,10 @@ export const optimismSepolia = {
   contracts: {
     ...optimismSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0xCd19833F5c9402cd3BCc19c994E49e5A61bF0281",
+      address: "0x4aCA4991E21E14b0a08A691D3003630F46c9a4c1",
     },
-    l2ReverseResolver: {
-      address: "0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376",
+    l2ReverseRegistrar: {
+      address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
     },
   },
   rpc: {
@@ -126,10 +126,10 @@ export const arbitrumSepolia = {
   contracts: {
     ...arbitrumSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0xfdf96b25c1D26f07e6957BEFA9EF7Afe51c43BFe",
+      address: "0x36d4c0610408995c02fE7ABE14D1b142D21946bF",
     },
-    l2ReverseResolver: {
-      address: "0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376",
+    l2ReverseRegistrar: {
+      address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
     },
   },
   rpc: {
@@ -151,10 +151,10 @@ export const scrollSepolia = {
   contracts: {
     ...scrollSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x71D9BCc0C53faC3bF5345770D347c7b4b8896acF",
+      address: "0x3Abc545C262f7E9f49e399D044085704A139060E",
     },
-    l2ReverseResolver: {
-      address: "0xc0497E381f536Be9ce14B0dD3817cBcAe57d2F62",
+    l2ReverseRegistrar: {
+      address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
     },
   },
   rpc: {
@@ -176,10 +176,10 @@ export const lineaSepolia = {
   contracts: {
     ...lineaSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0xe6152Ec76d027cf4824Fa6950500568D3C7a0CE8",
+      address: "0x9A37d37353E6F4C2FF6A2450Ed01CB83Fc260faA",
     },
-    l2ReverseResolver: {
-      address: "0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376",
+    l2ReverseRegistrar: {
+      address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
     },
   },
   rpc: {
