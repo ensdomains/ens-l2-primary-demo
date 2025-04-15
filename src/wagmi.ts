@@ -14,10 +14,10 @@ export const config_ = getDefaultConfig({
   projectId: import.meta.env.VITE_WC_PROJECT_ID,
   chains: [
     sepolia,
-    // baseSepolia,
-    // optimismSepolia,
-    // arbitrumSepolia,
-    scrollSepolia,
+    baseSepolia,
+    optimismSepolia,
+    arbitrumSepolia,
+    // scrollSepolia,
     lineaSepolia,
   ],
   transports: {

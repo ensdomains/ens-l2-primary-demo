@@ -22,6 +22,7 @@ type ChainRpcDetails = {
   ankr?: string;
   infura?: string;
   alchemy?: string;
+  drpc?: string;
 };
 type ChainWithDetails = Chain & {
   rpc: ChainRpcDetails;
@@ -35,10 +36,18 @@ const apiKeys = {
   alchemy: "GCuqAN_JwFx5WQ9B70-of6FlQpUbecBw",
   ankr: "cc4f51973be04739743bf347bbafe81389e6aef743379bb6d9eb39cac4d4ba48",
   infura: "fb056f5f6e304fd59aa054196f601d3a",
+  drpc: "AjKib_55JEmzihaZhIxhyNb_ffsW8IMR7oQ98qIilXTF",
 };
 
 export const constructTransport = (details: ChainRpcDetails) => {
   return fallback([
+    ...("drpc" in details
+      ? [
+          http(
+            `https://lb.drpc.org/ogrpc?network=${details.drpc}&dkey=${apiKeys.drpc}`
+          ),
+        ]
+      : []),
     ...("alchemy" in details
       ? [http(`https://${details.alchemy}.g.alchemy.com/v2/${apiKeys.alchemy}`)]
       : []),
@@ -67,6 +76,7 @@ export const sepolia = {
     ankr: "eth_sepolia",
     infura: "sepolia",
     alchemy: "eth-sepolia",
+    drpc: "sepolia",
   },
   icon: ethereumIcon,
   tags: [["L1", "blue"]],
@@ -77,7 +87,7 @@ export const baseSepolia = {
   contracts: {
     ...baseSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x27cDac6782deCA38795A060Dc4683F9EBb6E7e56",
+      address: "0x490F21cA7294Db7489b98A251D029E83a17A7262",
     },
     l2ReverseRegistrar: {
       address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
@@ -88,10 +98,11 @@ export const baseSepolia = {
     ankr: "base_sepolia",
     infura: "base-sepolia",
     alchemy: "base-sepolia",
+    drpc: "base-sepolia",
   },
   icon: baseIcon,
   tags: [
-    ["2hr sync", "purple"],
+    ["6hr sync", "purple"],
     ["Safe unfinalised", "orange"],
   ],
 } as const satisfies ChainWithDetails;
@@ -101,7 +112,7 @@ export const optimismSepolia = {
   contracts: {
     ...optimismSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x4aCA4991E21E14b0a08A691D3003630F46c9a4c1",
+      address: "0xD8af9130D2A770B53A20EEbC40377D097f3EFc19",
     },
     l2ReverseRegistrar: {
       address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
@@ -112,10 +123,11 @@ export const optimismSepolia = {
     ankr: "optimism_sepolia",
     infura: "optimism-sepolia",
     alchemy: "opt-sepolia",
+    drpc: "optimism-sepolia",
   },
   icon: optimismIcon,
   tags: [
-    ["2hr sync", "purple"],
+    ["6hr sync", "purple"],
     ["Safe unfinalised", "orange"],
   ],
 } as const satisfies ChainWithDetails;
@@ -126,7 +138,7 @@ export const arbitrumSepolia = {
   contracts: {
     ...arbitrumSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x36d4c0610408995c02fE7ABE14D1b142D21946bF",
+      address: "0x5Fec74B711EdE9828eddfb7A0370BD28D075fdeF",
     },
     l2ReverseRegistrar: {
       address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
@@ -137,10 +149,11 @@ export const arbitrumSepolia = {
     ankr: "arbitrum_sepolia",
     infura: "arbitrum-sepolia",
     alchemy: "arb-sepolia",
+    drpc: "arbitrum-sepolia",
   },
   icon: arbitrumIcon,
   tags: [
-    ["1hr sync", "purple"],
+    ["6hr sync", "purple"],
     ["Safe unfinalised", "orange"],
   ],
 } as const satisfies ChainWithDetails;
@@ -151,7 +164,7 @@ export const scrollSepolia = {
   contracts: {
     ...scrollSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x3Abc545C262f7E9f49e399D044085704A139060E",
+      address: "0xDf756B18878da8229e4e741A467b4432dde0601A",
     },
     l2ReverseRegistrar: {
       address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
@@ -160,6 +173,7 @@ export const scrollSepolia = {
   rpc: {
     url: "https://sepolia-rpc.scroll.io",
     ankr: "scroll_sepolia_testnet",
+    drpc: "scroll-sepolia",
   },
   icon: scrollIcon,
   iconUrl: async () => scrollIcon,
@@ -176,7 +190,7 @@ export const lineaSepolia = {
   contracts: {
     ...lineaSepoliaViem.contracts,
     l1ReverseResolver: {
-      address: "0x9A37d37353E6F4C2FF6A2450Ed01CB83Fc260faA",
+      address: "0x65Fd0B7576027fDF1EE49dA5099D9bCb305710e5",
     },
     l2ReverseRegistrar: {
       address: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
@@ -186,6 +200,7 @@ export const lineaSepolia = {
     url: "https://rpc.sepolia.linea.build",
     infura: "linea-sepolia",
     alchemy: "linea-sepolia",
+    drpc: "linea-sepolia",
   },
   icon: lineaIcon,
   iconUrl: async () => lineaIcon,
