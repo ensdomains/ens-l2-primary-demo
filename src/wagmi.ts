@@ -9,17 +9,12 @@ import {
   sepolia,
 } from "./chains";
 
+import { chains } from "./chains2";
+
 export const config_ = getDefaultConfig({
   appName: "ENS L2 Primary Demo",
   projectId: import.meta.env.VITE_WC_PROJECT_ID,
-  chains: [
-    sepolia,
-    baseSepolia,
-    optimismSepolia,
-    arbitrumSepolia,
-    // scrollSepolia,
-    lineaSepolia,
-  ],
+  chains,
   transports: {
     [sepolia.id]: constructTransport(sepolia.rpc),
     [baseSepolia.id]: constructTransport(baseSepolia.rpc),

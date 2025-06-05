@@ -88,6 +88,7 @@ export const getPrimaryNameQueryFn =
 
     if (!currentChain) throw new Error("chain not found");
 
+    // If the chain is L1
     if (!currentChain?.sourceId) {
       console.log("trying to read ens name");
       const client = config.getClient({ chainId });
@@ -112,15 +113,18 @@ export const getPrimaryNameQueryFn =
       });
     }
 
+    // 
     const reverseNode = getReverseNode(address, {
       chainId: currentChain.id,
     });
 
     if (directQuery) {
+      console.warn("DIRECT QUERY L2");
       const registrarAddress = getChainContractAddress({
         chain: currentChain,
         contract: "l2ReverseRegistrar",
       });
+      console.warn("UsePrimaryName: registrar address", registrarAddress);
       const client = config.getClient({ chainId: currentChain.id });
       return readContract(client, {
         address: registrarAddress,
@@ -130,6 +134,7 @@ export const getPrimaryNameQueryFn =
       });
     }
 
+    console.warn("UsePrimaryName: currentChain", currentChain);
     const targetChain = config.chains.find(
       (c) => c.id === currentChain?.sourceId
     );
@@ -137,6 +142,11 @@ export const getPrimaryNameQueryFn =
     const client = config.getClient({ chainId: targetChain.id });
     console.log("before");
 
+    console.warn("useprimaryname: targetChain", targetChain);
+    console.warn('contract address', getChainContractAddress({
+      chain: targetChain,
+      contract: "ensRegistry",
+    }))
     const resolver = await readContract(client, {
       address: getChainContractAddress({
         chain: targetChain,
@@ -165,6 +175,7 @@ export const getPrimaryNameQueryFn =
       functionName: "name",
       data: result,
     });
+    
 
     if (!name) return null;
 
