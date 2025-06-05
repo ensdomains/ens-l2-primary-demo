@@ -1,8 +1,6 @@
 import { type QueryFunctionContext, useQuery } from "@tanstack/react-query"
 import {
   encodeFunctionData,
-  getChparseAbi,
-  ainContractAddress,
   namehash,
   type Address,
   getChainContractAddress,
@@ -15,21 +13,13 @@ import { useQueryOptions } from "./useQueryOptions"
 import {
   getOwner,
   GetOwnerReturnType,
-  getRecords,
 } from "@ensdomains/ensjs/public"
-import { base, ethereum, l2Chains } from "../chains2"
+import { ethereum } from "../chains2"
 import { EMPTY_ADDRESS, normalise } from "@ensdomains/ensjs/utils"
 import { match, P } from "ts-pattern"
 import { readContract } from "viem/actions"
-import {
-  publicResolverMultiAddrSnippet,
-  publicResolverSingleAddrSnippet,
-  universalResolverResolveArraySnippet,
-} from "@ensdomains/ensjs/contracts"
 import { dnsEncodeName } from "../utils/name"
-import { baseSepolia } from "viem/chains"
 import { chains } from "../chains2"
-import { decodeFunctionResult } from 'viem';
 
 type GetNameDataParameters = {
   name: string
@@ -139,19 +129,6 @@ export const getNameDataQueryFn =
       args: [namehash(name), BigInt(chain.coinType)],
     }))
 
-    const calls2 = [
-      encodeFunctionData({
-        abi: ADDR_ABI,
-        functionName: "addr",
-        args: [namehash(name)],
-      }),
-      ...l2Chains.map((chain) => encodeFunctionData({
-        abi: PROFILE_ABI,
-        functionName: "addr",
-        args: [namehash(name), BigInt(chain.coinType)],
-      })),
-    ]
-
     const encodedMulticallResults = await readContract(client, {
       address: getChainContractAddress({
         chain: ethereum,
@@ -171,6 +148,7 @@ export const getNameDataQueryFn =
 
     console.log('encodedMulticallResults', encodedMulticallResults)
 
+    const resolverAddress = encodedMulticallResults[1]
     const decodedMulticallResult = decodeFunctionResult({
       abi: RESOLVE_MULTICALL,
       functionName: "multicall",
@@ -180,7 +158,6 @@ export const getNameDataQueryFn =
     console.log('decodedMulticallResult', decodedMulticallResult)
 
     const encodedAddrResults = decodedMulticallResult[0]
-    const resolverAddress = encodedMulticallResults[1]
 
 console.log('encodedAddrResults', encodedAddrResults)
     const coins = chains.map((chain, i) => chain.coinType === 60 ? {
