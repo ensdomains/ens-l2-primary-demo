@@ -49,7 +49,11 @@ const contractAddresses: Record<number, Record<string, Address>> = {
   },
 } as const
 
-export const addPrimaryNameContractsAndCoinType = (chain: Chain) => {
+export type ChainWithCoinType = Chain & {
+  coinType: number
+}
+
+export const addPrimaryNameContractsAndCoinType = (chain: Chain): ChainWithCoinType => {
   const contractsAddresses = contractAddresses[chain.id] || {}
   const contracts = Object.fromEntries(Object.entries(contractsAddresses).map(([key, value]) => [key, { address: value }]))
   return {

@@ -1,219 +1,33 @@
-import {
-  Button,
-  Card,
-  CardDivider,
-  Heading,
-  RecordItem,
-  Tag,
-  Typography,
-} from "@ensdomains/thorin"
-import { match } from "ts-pattern"
-import { type Address, getChainContractAddress } from "viem"
-import { useAccount, useConfig } from "wagmi"
-import { usePrimaryName } from "../../../hooks/usePrimaryName"
-import { useSyncName } from "../../../hooks/useSyncName"
-import type { L1Chain, SupportedChain } from "../../../wagmi"
-import { useUniveralResolverPrimaryName } from "../../../hooks/useUniveralResolverPrimaryName"
-import { evmChainIdToCoinType } from "@ensdomains/address-encoder/utils"
-import { useTransactionStore } from "../../../stores/transactionStore"
-import { ChainCard } from "../../ChainCard/ChainCard"
-import { mainnet, sepolia } from "viem/chains"
-import { primaryNameOptions } from "../../../primaryOptions"
-import { PrimaryNameOptionsList } from "../../PrimaryNameOptionsList/PrimaryNameOptionsList"
+import { type Address } from "viem"
+import { primaryNameOptions } from "../../../constants/primaryNameOptions"
+import { PrimaryNameOptionsList } from "../../molecules/PrimaryNameOptionsList/PrimaryNameOptionsList"
 import { shortenAddress } from "../../../utils/address"
-import { useParams } from "react-router"
-import { WalletTransactionDialog } from "../../WalletTransactionDialog/WalletTransactionDialog"
-
-const IndividualChainDisplay = ({
-  chain,
-  l1Chain,
-  address,
-}: {
-  chain: SupportedChain
-  l1Chain: L1Chain
-  address: Address
-}) => {
-  const isL2 = !!chain.sourceId
-
-
-  const { data: primaryName } = usePrimaryName({ address, chainId: chain.id })
-  const { data: l1PrimaryName } = usePrimaryName({
-    address,
-    chainId: chain.sourceId,
-    directQuery: true,
-    enabled: isL2,
-  })
-  const { data: l2OrDefaultPrimaryName } = usePrimaryName({
-    address,
-    chainId: chain.id,
-    directQuery: true,
-    forceDefault: !isL2,
-  })
-
-  const testing = useUniveralResolverPrimaryName({
-    address,
-    coinType: evmChainIdToCoinType(chain.id),
-  })
-
-  if (chain.id === 84532) {
-    console.log("chainId", chain.id)
-    console.log("primaryName", primaryName)
-    console.log("l1PrimaryName", l1PrimaryName)
-    console.log("coinType", evmChainIdToCoinType(chain.id))
-    console.log("l2OrDefaultPrimaryName", l2OrDefaultPrimaryName)
-    console.log("universalResolverPrimaryName", testing)
-  }
-
-  const { status, prepare, execute, switchChain } = useSyncName({
-    targetChain: chain,
-    targetAddress: getChainContractAddress({
-      chain,
-      contract: "l2ReverseRegistrar",
-    }),
-    ...(isL2
-      ? {
-          chainId: chain.id,
-        }
-      : {
-          ns: "default",
-        }),
-  })
-
-  const [buttonDisabled, buttonText] = (() => {
-    if (l2OrDefaultPrimaryName === l1PrimaryName && false)
-      return [
-        true,
-        primaryName !== l2OrDefaultPrimaryName ? "Syncing" : "Already synced",
-      ]
-    if (isL2) return [false, `Sync to ${l1Chain.name} value`]
-    return [false, "Sync default value"]
-  })()
-
-  const transactionButton = match(status)
-    .with(null, () => (
-      <Button size='small' disabled={buttonDisabled} onClick={prepare}>
-        {buttonText}
-      </Button>
-    ))
-    .with("preparing", () => (
-      <Button size='small' disabled>
-        Preparing
-      </Button>
-    ))
-    .with("switchChain", () => (
-      <Button size='small' onClick={switchChain}>
-        Switch chain
-      </Button>
-    ))
-    .with("prepared", () => (
-      <Button size='small' onClick={execute}>
-        Sync
-      </Button>
-    ))
-    .with("confirmInWallet", () => (
-      <Button size='small' disabled>
-        Confirm in wallet
-      </Button>
-    ))
-    .with("sent", () => (
-      <Button size='small' disabled>
-        Sent
-      </Button>
-    ))
-    .with("confirmed", () => (
-      <Button size='small' disabled>
-        Confirmed
-      </Button>
-    ))
-    .exhaustive()
-
-  return (
-    <Card className='chain-item'>
-      <div className='title'>
-        <img src={chain.icon} alt={chain.name} />
-        <Typography fontVariant='headingFour'>{chain.name}</Typography>
-      </div>
-      <div className='tags'>
-        {/* {chain.tags.map(([content, color]) => (
-          <Tag key={content} colorStyle={`${color}Secondary`}>
-            {content}
-          </Tag>
-        ))} */}
-      </div>
-      <div className='values'>
-        <div className='value'>
-          <Typography>L1 value</Typography>
-          {primaryName ? (
-            <RecordItem value={primaryName}>{primaryName}</RecordItem>
-          ) : (
-            <Typography
-              className='no-value'
-              fontVariant='bodyBold'
-              color='textDisabled'
-            >
-              No primary name
-            </Typography>
-          )}
-        </div>
-        <div className='value'>
-          <Typography>{isL2 ? "L2 value" : "Default value"}</Typography>
-          {l2OrDefaultPrimaryName ? (
-            <RecordItem value={l2OrDefaultPrimaryName}>
-              {l2OrDefaultPrimaryName}
-            </RecordItem>
-          ) : (
-            <Typography
-              className='no-value'
-              fontVariant='bodyBold'
-              color='textDisabled'
-            >
-              No primary name
-            </Typography>
-          )}
-        </div>
-      </div>
-      <CardDivider />
-      <div className='buttons'>{transactionButton}</div>
-    </Card>
-  )
-}
+import { TransactionDialog } from "../../molecules/TransactionDialog/TransactionDialog"
+import { AddressCentricPrimaryOption } from "./components/AddressCentricPrimaryOption/AddressCentricPrimaryOption"
+import { AddressCentricDefaultPrimaryOption } from "./components/AddressCentricDefaultPrimaryOption/AddressCentricDefaultPrimaryOption"
 
 export const AddressCentricView = ({ address }: { address: Address }) => {
-  const config = useConfig()
-
-
-  const currentChainId = config.state.chainId
-  const currentChain = config.chains.find((c) => c.id === currentChainId)
-  const l1Chain = (
-    currentChain?.sourceId
-      ? config.chains.find((c) => c.id === currentChain?.sourceId)
-      : currentChain
-  ) as L1Chain
-
-  const { setDialogOpen } = useTransactionStore()
-
   return (
-    <PrimaryNameOptionsList>
-      <PrimaryNameOptionsList.Header label="Setting Primary Names for" title={shortenAddress(address ?? '')} />
-      {primaryNameOptions.map((option) => <PrimaryNameOptionsList.Item key={option.id}>
-        <ChainCard {...option} />
-      </PrimaryNameOptionsList.Item>)}
-      {/* {address ? (
-        config.chains.filter((c) => c.id === 84532).map((c) => (<>
-          <IndividualChainDisplay
-            key={c.id}
-            chain={c}
-            l1Chain={l1Chain}
-            address={address}
-          />
-          </>
-        ))
-      ) : (
-        <Heading level='1'>
-          Connect your wallet to view L2 primary names
-        </Heading>
-      )} */}
-      <WalletTransactionDialog />
-    </PrimaryNameOptionsList>
+    <>
+      <PrimaryNameOptionsList>
+        <PrimaryNameOptionsList.Header
+          value={address}
+          title={shortenAddress(address)}
+        />
+        {primaryNameOptions.map((option) => (
+          <PrimaryNameOptionsList.Item key={option.id}>
+            {option.id === 0 ? (
+              <AddressCentricDefaultPrimaryOption
+                address={address}
+                option={option}
+              />
+            ) : (
+              <AddressCentricPrimaryOption address={address} option={option} />
+            )}
+          </PrimaryNameOptionsList.Item>
+        ))}
+      </PrimaryNameOptionsList>
+      <TransactionDialog />
+    </>
   )
 }

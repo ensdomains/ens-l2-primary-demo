@@ -10,45 +10,44 @@ import {
 import { prepareQueryOptions } from "../query/prepareQueryOptions"
 import type { ConfigWithEns, CreateQueryKey, QueryConfig } from "../query/query"
 import { useQueryOptions } from "./useQueryOptions"
-import {
-  getOwner,
-  GetOwnerReturnType,
-} from "@ensdomains/ensjs/public"
-import { ethereum } from "../chains2"
-import { EMPTY_ADDRESS, normalise } from "@ensdomains/ensjs/utils"
-import { match, P } from "ts-pattern"
+import { getOwner, GetOwnerReturnType } from "@ensdomains/ensjs/public"
+import { ethereum } from "../constants/chains"
+import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { readContract } from "viem/actions"
 import { dnsEncodeName } from "../utils/name"
-import { chains } from "../chains2"
-
-type GetNameDataParameters = {
-  name: string
-}
+import { chains } from "../constants/chains"
+import { ClientWithEns } from "@ensdomains/ensjs/contracts"
+import { normalizeAddress } from "@/utils/address"
 
 export type NameData = {
   name: string
-  ownership: GetOwnerReturnType | null
+  ownership: NonNullable<GetOwnerReturnType>
   coins: {
     id: number
+    coinType: number
     value: Address
   }[]
   resolverAddress: Address
 }
 
-type GetNameDetailsReturnType = NameData | null
+type GetNameDataParameters = {
+  name?: string
+}
 
-type UseNameDetailsParameters = GetNameDataParameters
+type GetNameDataReturnType = NameData | null
 
-export type UseNameDetailsReturnType = GetNameDetailsReturnType
+type UseNameDataParameters = GetNameDataParameters
+
+export type UseNameDataReturnType = GetNameDataReturnType
 
 type UseNameDataConfig = QueryConfig<
-  UseNameDetailsReturnType,
+  UseNameDataReturnType,
   Error,
-  UseNameDetailsReturnType,
-  QueryKey<UseNameDetailsParameters>
+  UseNameDataReturnType,
+  QueryKey<UseNameDataParameters>
 >
 
-type QueryKey<TParams extends UseNameDetailsParameters> = CreateQueryKey<
+type QueryKey<TParams extends UseNameDataParameters> = CreateQueryKey<
   TParams,
   "getNameData",
   "standard"
@@ -93,7 +92,7 @@ const RESOLVE_MULTICALL = parseAbi([
 const ADDR_ABI = parseAbi([
   "function addr(bytes32) external view returns (address)",
 ])
- 
+
 const PROFILE_ABI = parseAbi([
   "function addr(bytes32, uint256 coinType) external view returns (bytes)",
   "function text(bytes32, string key) external view returns (string)",
@@ -102,15 +101,15 @@ const PROFILE_ABI = parseAbi([
 
 export const getNameDataQueryFn =
   (config: ConfigWithEns) =>
-  async <TParams extends UseNameDetailsParameters>({
-    queryKey: [{ name: name__, ...params }],
+  async <TParams extends UseNameDataParameters>({
+    queryKey: [{ name, ...params }],
   }: QueryFunctionContext<QueryKey<TParams>>) => {
-    const chainId = ethereum.id
-    const client = config.getClient({ chainId })
+    if (!name) return null
 
-    const name = normalise(name__)
+    const chainId = ethereum.id
+    const client = config.getClient({ chainId }) as unknown as ClientWithEns
+
     const ownership = await getOwner(client, { name: name })
-    console.log("ownership", name, ownership)
     if (
       !ownership ||
       ownership.owner === EMPTY_ADDRESS ||
@@ -118,18 +117,21 @@ export const getNameDataQueryFn =
     )
       return null
 
- 
-    const calls = chains.map((chain) => chain.coinType === 60 ? encodeFunctionData({
-      abi: ADDR_ABI,
-      functionName: "addr",
-      args: [namehash(name)],
-    }) : encodeFunctionData({
-      abi: PROFILE_ABI,
-      functionName: "addr",
-      args: [namehash(name), BigInt(chain.coinType)],
-    }))
+    const calls = chains.map((chain) =>
+      chain.coinType === 60
+        ? encodeFunctionData({
+            abi: ADDR_ABI,
+            functionName: "addr",
+            args: [namehash(name)],
+          })
+        : encodeFunctionData({
+            abi: PROFILE_ABI,
+            functionName: "addr",
+            args: [namehash(name), BigInt(chain.coinType)],
+          }),
+    )
 
-    const encodedMulticallResults = await readContract(client, {
+    const resp = await readContract(client, {
       address: getChainContractAddress({
         chain: ethereum,
         contract: "ensUniversalResolver",
@@ -145,64 +147,61 @@ export const getNameDataQueryFn =
         }),
       ],
     })
+    const [encodedMulticallResults, resolverAddress] = resp as [
+      `0x${string}`,
+      Address,
+    ]
 
-    console.log('encodedMulticallResults', encodedMulticallResults)
-
-    const resolverAddress = encodedMulticallResults[1]
     const decodedMulticallResult = decodeFunctionResult({
       abi: RESOLVE_MULTICALL,
       functionName: "multicall",
-      data: encodedMulticallResults[0],
+      data: encodedMulticallResults,
     })
 
-    console.log('decodedMulticallResult', decodedMulticallResult)
-
-    const encodedAddrResults = decodedMulticallResult[0]
-
-console.log('encodedAddrResults', encodedAddrResults)
-    const coins = chains.map((chain, i) => chain.coinType === 60 ? {
-      id: chain.id, 
-      value: decodeFunctionResult({
-      abi: ADDR_ABI,
-      functionName: "addr",
-      data: decodedMulticallResult[i],
-    })} : {
-      id: chain.id,
-      value: decodeFunctionResult({
-      abi: PROFILE_ABI,
-      functionName: "addr",
-      data: decodedMulticallResult[i],
-    })})
+    const coins = chains.map((chain, i) =>
+      chain.coinType === 60
+        ? {
+            id: chain.id,
+            coinType: chain.coinType,
+            value: normalizeAddress(
+              decodeFunctionResult({
+                abi: ADDR_ABI,
+                functionName: "addr",
+                data: decodedMulticallResult[i],
+              }),
+            ),
+          }
+        : {
+            id: chain.id,
+            coinType: chain.coinType,
+            value: normalizeAddress(
+              decodeFunctionResult({
+                abi: PROFILE_ABI,
+                functionName: "addr",
+                data: decodedMulticallResult[i],
+              }),
+            ),
+          },
+    )
 
     return {
       name,
       ownership,
       coins,
       resolverAddress,
-    }
+    } as NameData
   }
 
-export const useNameData = <TParams extends UseNameDetailsParameters>({
+export const useNameData = <TParams extends UseNameDataParameters>({
   // config
   enabled = true,
   gcTime,
   staleTime,
   scopeKey,
   // params
-  name: name__,
+  name,
   ...params
 }: TParams & UseNameDataConfig) => {
-  const name = match(name__)
-    .with(
-      P.when((name) => !!name === false),
-      () => "",
-    )
-    .with(
-      P.when((name) => name.indexOf(".") === -1),
-      (name) => `${name}.eth`,
-    )
-    .otherwise((name) => name)
-
   const initialOptions = useQueryOptions({
     params: { ...params, name },
     scopeKey,
@@ -215,8 +214,7 @@ export const useNameData = <TParams extends UseNameDetailsParameters>({
     queryKey: initialOptions.queryKey,
     queryFn: initialOptions.queryFn,
     gcTime,
-    staleTime,
-    enabled: enabled && name.length > 4,
+    enabled: enabled && !!name,
   })
 
   return useQuery(preparedOptions)

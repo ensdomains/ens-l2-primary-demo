@@ -1,40 +1,54 @@
-import { Button, Dialog } from "@ensdomains/thorin"
+import { useTransactionStore } from "@/stores/transactionStore"
+import {
+  Button,
+  Dialog,
+  Helper,
+  Typography,
+  LeftArrowSVG,
+} from "@ensdomains/thorin"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
-import { Address } from "viem"
-import { useAccount } from "wagmi"
 
 export const ChangeWalletView = ({
-  requiredAddress,
+  title,
+  subtitle,
+  subtitle2,
+  helperText,
+  onBack,
 }: {
-  requiredAddress: Address
+  title: string
+  subtitle?: React.ReactNode
+  subtitle2?: React.ReactNode
+  helperText: React.ReactNode
+  onBack?: () => void
 }) => {
-  const { address, connector } = useAccount()
 
+  const { decrement } = useTransactionStore()
   const { openConnectModal } = useConnectModal()
 
-  console.log("openConnectModal", openConnectModal, address, connector)
   return (
     <>
-      <Dialog.Heading title='Change Wallet' />
+      <Dialog.Heading title={title} />
       <Dialog.Content>
-        <div>
-          <div>
-            <div>Name</div>
-            <div>dom.eth</div>
-          </div>
-        </div>
+        {subtitle && <Typography textAlign='center'>{subtitle}</Typography>}
+        {subtitle2 && <Typography textAlign='center'>{subtitle2}</Typography>}
+        <Helper alert='info' alignment='vertical' textAlign={"center"}>
+          <Typography>{helperText}</Typography>
+        </Helper>
       </Dialog.Content>
       <Dialog.Footer
-        leading={<Button colorStyle='accentSecondary'>Back</Button>}
+        leading={
+          <Button colorStyle='accentSecondary' shape='square' onClick={decrement}>
+            <LeftArrowSVG style={{ width: "1rem", height: "1rem" }} />
+          </Button>
+        }
         trailing={
           <Button
             colorStyle='accentPrimary'
             onClick={() => {
-              alert("switch")
               openConnectModal?.()
             }}
           >
-            Switch Wallet
+            Switch connection
           </Button>
         }
       />

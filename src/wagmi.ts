@@ -9,7 +9,7 @@ import {
   sepolia,
 } from "./chains";
 
-import { chains } from "./chains2";
+import { chains } from "./constants/chains";
 
 export const config_ = getDefaultConfig({
   appName: "ENS L2 Primary Demo",
