@@ -22,6 +22,8 @@ export const useCheckAddressAndChain = ({
   const config = useConfig()
   const { switchChain } = useSwitchChain()
 
+  console.log("useCheckAddressAndChain", { address, requiredAddress, currentChainId, requiredChainId, isConnecting, isConnected })
+
   useEffect(() => {
     const check = async () => {
       console.log("checking >>>>>", {address, requiredAddress, currentChainId, requiredChainId})

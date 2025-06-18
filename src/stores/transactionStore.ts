@@ -294,7 +294,9 @@ export const useTransactionStore = create<TransactionStore>()(
         return { flow, key: currentKey }
       },
       getCurrentView: () => {
+        console.log("getCurrentView")
         const { flow, key } = get().getCurrentFlow()
+        console.log("getCurrentView", { flow, key })
         const failedResult = { view: undefined, key: undefined, viewIndex: undefined }
 
         if (!flow) return failedResult
@@ -303,6 +305,7 @@ export const useTransactionStore = create<TransactionStore>()(
         const view = flow?.views[viewIndex]
         if (!view) return failedResult
 
+        console.log("getCurrentView", { view, key, viewIndex })
         return { view, key, viewIndex }
       },
       appendViews: (views: View[]) =>

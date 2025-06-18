@@ -94,6 +94,7 @@ export const SetRecordView = ({
           execute()
         }}
         onRetry={() => {
+          console.log("onRetry")
           reset()
         }}
         onNext={() => {

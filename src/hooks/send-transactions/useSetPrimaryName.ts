@@ -1,16 +1,17 @@
-import { type Address, encodeFunctionData, parseAbi } from "viem"
+import { type Address, encodeFunctionData } from "viem"
 import {
   useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
-  useWaitForTransactionReceipt,
+  // useWaitForTransactionReceipt,
 } from "wagmi"
 import { PrimaryOption } from "../../constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
+import { reverseRegistrarSetNameSnippet } from "@ensdomains/ensjs/contracts"
 
-const setNameAbi = parseAbi(["function setName(string memory name)"])
+// const setNameAbi = parseAbi(["function setName(string memory name)"])
 
 export const useSetPrimaryName = ({
   targetAddress,
@@ -23,7 +24,7 @@ export const useSetPrimaryName = ({
 }) => {
   const reverseRegistarAddress = primaryNameOption.reverseRegistarAddress
 
-  const { addTransaction, getCurrentViewPosition, updateView } = useTransactionStore()
+  const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
 
   const { data: isAddressAndChainValid, isLoading: isCheckLoading } = useCheckAddressAndChain({
     address: targetAddress,
@@ -32,6 +33,16 @@ export const useSetPrimaryName = ({
 
   const config = useConfig()
 
+  console.log("useSetPrimaryName",{
+    name,
+    to: reverseRegistarAddress,
+    chainId: primaryNameOption?.chain.id,
+    data: encodeFunctionData({
+      abi: reverseRegistrarSetNameSnippet,
+      args: [name],
+    })
+  })
+
   const {
     data: preparedRequest,
     isLoading: isPrepareLoading,
@@ -39,9 +50,9 @@ export const useSetPrimaryName = ({
     refetch,
   } = usePrepareTransactionRequest({
     to: reverseRegistarAddress,
-    chainId: primaryNameOption?.chain.id,
+    chainId: primaryNameOption.chain.id,
     data: encodeFunctionData({
-      abi: setNameAbi,
+      abi: reverseRegistrarSetNameSnippet,
       args: [name],
     }),
   })
@@ -50,8 +61,8 @@ export const useSetPrimaryName = ({
   const {
     sendTransaction,
     isPending,
-    isSuccess,
-    data: hash,
+    // isSuccess,
+    // data: hash,
     error: sendError,
   } = useSendTransaction({
     mutation: {
@@ -68,26 +79,27 @@ export const useSetPrimaryName = ({
     },
   })
 
-  const { data: transactionReceipt } = useWaitForTransactionReceipt({
-    hash,
-    chainId: primaryNameOption?.chain.id,
-  })
+  // TODO: REmove this if we are not using it
+  // const { data: transactionReceipt } = useWaitForTransactionReceipt({
+  //   hash,
+  //   chainId: primaryNameOption?.chain.id,
+  // })
 
-  const execute = async () =>
-    sendTransaction({
-      ...preparedRequest,
-      to: primaryNameOption.reverseRegistarAddress,
-    })
+  const execute = async () => {
+    if (!preparedRequest) return
+    sendTransaction(preparedRequest)
+  }
 
+  const currentTransaction = getCurrentTransaction()
   const status = calculateTransactionStatus({
     isLoading: isCheckLoading,
     isOutOfSync: !isAddressAndChainValid,
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
     isPending: isPending,
-    isSent: isSuccess,
-    isConfirmed: !!transactionReceipt,
-    isError: !!prepareError || !!sendError,
+    isSent: currentTransaction?.status === "sent",
+    isConfirmed: currentTransaction?.status === "confirmed",
+    isError: currentTransaction?.status === "failed" || !!prepareError || !!sendError,
   })
 
   const error = prepareError || sendError

@@ -3,7 +3,7 @@ import {
   useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
-  useWaitForTransactionReceipt,
+  // useWaitForTransactionReceipt,
 } from "wagmi"
 import { ethereum } from "../../constants/chains"
 import { publicResolverSetAddrSnippet } from "@ensdomains/ensjs/contracts"
@@ -23,7 +23,8 @@ export const useSetRecord = ({
   targetAddress: Address
   resolverAddress: Address
 }) => {
-  const { addTransaction, getCurrentViewPosition } = useTransactionStore()
+
+  const { addTransaction, getCurrentViewPosition, getCurrentTransaction } = useTransactionStore()
 
   const { data: isAddressAndChainValid, isLoading: isCheckLoading } =
     useCheckAddressAndChain({
@@ -52,8 +53,8 @@ export const useSetRecord = ({
   const {
     sendTransaction,
     isPending,
-    isSuccess,
-    data: hash,
+    // isSuccess,
+    // data: hash,
     error: sendError,
   } = useSendTransaction({
     mutation: {
@@ -70,13 +71,15 @@ export const useSetRecord = ({
     },
   })
 
-  const { data: transactionReceipt } = useWaitForTransactionReceipt({
-    hash,
-    chainId: ethereum.id,
-  })
+  // const { data: transactionReceipt } = useWaitForTransactionReceipt({
+  //   hash,
+  //   chainId: ethereum.id,
+  // })
 
   const execute = () =>
     sendTransaction({ ...preparedRequest, to: resolverAddress })
+
+  const currentTransaction = getCurrentTransaction()
 
   const status = calculateTransactionStatus({
     isLoading: isCheckLoading,
@@ -84,9 +87,9 @@ export const useSetRecord = ({
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
     isPending: isPending,
-    isSent: isSuccess,
-    isConfirmed: !!transactionReceipt,
-    isError: !!prepareError || !!sendError,
+    isSent: currentTransaction?.status === "sent",
+    isConfirmed: currentTransaction?.status === "confirmed",
+    isError: currentTransaction?.status === "failed" || !!prepareError || !!sendError,
   })
 
   return {
