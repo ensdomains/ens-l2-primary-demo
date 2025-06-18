@@ -22,7 +22,7 @@ import optimismIcon from "@/assets/chain-icon/optimism.svg";
 import scrollIcon from "@/assets/chain-icon/scroll.svg";
 import { addPrimaryNameContractsAndCoinType, ChainWithCoinType } from "@/addPrimaryNameContracts";
 
-const isTestnet = import.meta.env.DEV
+const isTestnet = import.meta.env.DEV || import.meta.env.VITE_ENV === 'dev'
 
 export type ChainWithMetaData = ChainWithCoinType & {
   icon: string
