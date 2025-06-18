@@ -102,7 +102,7 @@ const PROFILE_ABI = parseAbi([
 export const getNameDataQueryFn =
   (config: ConfigWithEns) =>
   async <TParams extends UseNameDataParameters>({
-    queryKey: [{ name, ...params }],
+    queryKey: [{ name }],
   }: QueryFunctionContext<QueryKey<TParams>>) => {
     if (!name) return null
 

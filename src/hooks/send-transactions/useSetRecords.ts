@@ -3,7 +3,6 @@ import {
   useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
-  useWaitForTransactionReceipt,
 } from "wagmi"
 import { ethereum } from "../../constants/chains"
 import { useTransactionStore } from "@/stores/transactionStore"
@@ -59,8 +58,6 @@ export const useSetRecords = ({
   const {
     sendTransaction,
     isPending,
-    isSuccess,
-    data: hash,
     error: sendError,
   } = useSendTransaction({
     mutation: {
@@ -77,10 +74,10 @@ export const useSetRecords = ({
     },
   })
 
-  const { data: transactionReceipt } = useWaitForTransactionReceipt({
-    hash,
-    chainId: ethereum.id,
-  })
+  // const { data: transactionReceipt } = useWaitForTransactionReceipt({
+  //   hash,
+  //   chainId: ethereum.id,
+  // })
 
   const execute = () =>
     sendTransaction({ ...preparedRequest, to: resolverAddress })

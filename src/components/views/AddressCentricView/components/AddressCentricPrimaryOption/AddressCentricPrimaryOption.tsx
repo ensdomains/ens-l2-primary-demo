@@ -31,7 +31,6 @@ export const AddressCentricPrimaryOption = ({
     data: resolvedValue,
     isLoading: isResolvedLoading,
     isFetching: isResolvedFetching,
-    ...rest
   } = useResolvedPrimaryName({
     address: address as Address,
     coinType: option.chain.coinType,

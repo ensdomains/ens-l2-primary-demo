@@ -1,14 +1,5 @@
 import { commonVars, modeVars } from '@ensdomains/thorin';
-import { style, styleVariants, keyframes } from '@vanilla-extract/css';
-
-const fly = keyframes({
-  '0%': {
-    width: commonVars.space['9'],
-  },
-  '100%': {
-    width: '100%',
-  },
-});
+import { style, styleVariants } from '@vanilla-extract/css';
 
 export const containerBase = style({
   display: 'flex',

@@ -67,7 +67,6 @@ export const calculateSelectAddressTransactionFlow = ({
 }
 
 export const SelectAddressView = ({
-  nameData,
   targetAddress = "",
   primaryNameOption,
 }: ViewToViewProps<SelectAddressView>) => {

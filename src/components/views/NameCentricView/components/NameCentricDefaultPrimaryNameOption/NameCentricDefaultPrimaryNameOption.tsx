@@ -12,7 +12,7 @@ import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Typography } from "@ensdomains/thorin"
-import { match, P } from "ts-pattern"
+import { match } from "ts-pattern"
 import { useDefaultPrimaryNamesForAddresses } from "@/hooks/useDefaultPrimaryNamesForAddresses"
 import { isDefined } from "@/utils/predicates"
 

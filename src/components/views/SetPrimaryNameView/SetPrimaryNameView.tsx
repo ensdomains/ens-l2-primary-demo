@@ -4,7 +4,6 @@ import {
   ViewToViewProps,
 } from "../../../stores/transactionStore"
 import { TransactionView } from "@/components/views/TransactionView/TransactionView"
-import { useConfig } from "wagmi"
 import { ChangeWalletView } from "../ChangeWalletView/ChangeWalletView"
 import { useSetPrimaryName } from "../../../hooks/send-transactions/useSetPrimaryName"
 import { shortenAddress } from "../../../utils/address"

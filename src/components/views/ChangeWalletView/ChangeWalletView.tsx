@@ -13,7 +13,6 @@ export const ChangeWalletView = ({
   subtitle,
   subtitle2,
   helperText,
-  onBack,
 }: {
   title: string
   subtitle?: React.ReactNode

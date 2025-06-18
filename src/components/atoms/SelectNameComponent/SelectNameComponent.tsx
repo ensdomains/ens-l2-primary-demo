@@ -29,7 +29,6 @@ export const SelectNameComponent = ({
   const {
     data: searchedNameData,
     isFetching,
-    ...rest
   } = useNameData({
     name: debouncedValue,
     enabled: debouncedValue === value && debouncedValue.length > 3,

@@ -1,21 +1,15 @@
-import { useQueryClient } from "@tanstack/react-query"
-import { useMemo } from "react"
-import { type Address, encodeFunctionData, namehash, parseAbi } from "viem"
+import { type Address, encodeFunctionData, namehash } from "viem"
 import {
-  useAccount,
   useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
-  useSwitchChain,
   useWaitForTransactionReceipt,
 } from "wagmi"
-import type { ReverseNodeOptions } from "../../utils/name"
 import { ethereum } from "../../constants/chains"
 import { publicResolverSetAddrSnippet } from "@ensdomains/ensjs/contracts"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { NameData } from "../useNameData"
-import { match } from "ts-pattern"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
 
 export const useSetRecord = ({

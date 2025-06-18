@@ -14,6 +14,7 @@ import { useTransactionStore } from "@/stores/transactionStore"
 import { Typography } from "@ensdomains/thorin"
 import { match } from "ts-pattern"
 import { Address } from "viem"
+import { nameDataCoinTypesWithAddress } from "@/utils/nameData"
 
 export const transactionKey = (address: Address, option: PrimaryOption) =>
   `address:${address}::option:${option.id}`
@@ -131,6 +132,7 @@ export const AddressCentricDefaultPrimaryOption = ({
                 nameData: nameData ?? null,
                 targetAddress: address,
                 sourceValue: sourceValue ?? undefined,
+                coinTypes: nameDataCoinTypesWithAddress({nameData, address})
               },
             ],
             viewIndex: 0,
