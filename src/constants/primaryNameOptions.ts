@@ -1,7 +1,8 @@
 import { ChainWithMetaData, ethereum, l2Chains } from './chains';
 import ensIcon from '@/assets/chain-icon/ens.svg';
 import { UseSourcePrimaryNameFn } from '@/hooks/useSourcePrimaryName/useSourcePrimaryName';
-import { getL1PrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getL1PrimaryNameSource';
+import { getPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getPrimaryName';
+import { getDefaultPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getL1PrimaryNameSource';
 import { getL2PrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getL2PrimaryNameSource';
 import { Address, getChainContractAddress } from 'viem';
 
@@ -22,7 +23,7 @@ export const primaryNameOptions: PrimaryOption[] = [
     description: "The default primary name is used on any network where you haven't set a network-specific primary name.",
     chain: ethereum,
     icon: ensIcon,
-    sourceQuery: getL1PrimaryNameSource('default'),
+    sourceQuery: getDefaultPrimaryNameSource,
     reverseRegistarAddress: getChainContractAddress({ chain: ethereum, contract: 'ensDefaultReverseRegistrar'})
   },
   {
@@ -30,7 +31,7 @@ export const primaryNameOptions: PrimaryOption[] = [
     name: ethereum.name,
     chain: ethereum,
     icon: ethereum.icon,
-    sourceQuery: getL1PrimaryNameSource('addr'),
+    sourceQuery: getPrimaryNameSource,
     reverseRegistarAddress: getChainContractAddress({ chain: ethereum, contract: 'ensReverseRegistrar'})
   },
   ...l2Chains.map(chain => ({

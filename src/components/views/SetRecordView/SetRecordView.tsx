@@ -5,7 +5,7 @@ import {
 } from "../../../stores/transactionStore"
 import { TransactionView } from "@/components/views/TransactionView/TransactionView"
 import { useSetRecord } from "../../../hooks/send-transactions/useSetRecord"
-import { ChangeWalletView } from "../ChangeWalletView/ChangeWalletView"
+import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
 import { shortenAddress } from "../../../utils/address"
 import { match } from "ts-pattern"
 import { Address } from "viem"
@@ -49,7 +49,9 @@ export const SetRecordView = ({
   return match(status)
     .with("loading", () => <div>Loading</div>)
     .with("syncAddressOrChain", () => (
-      <ChangeWalletView
+      <SyncWalletAndNetworkView
+        requiredAddress={nameData.ownership.owner}
+        requiredChainId={primaryNameOption.chain.id}
         title={`Update ${primaryNameOption?.name} address`}
         subtitle={
           <span>

@@ -1,4 +1,4 @@
-import { type Address, encodeFunctionData } from "viem"
+import { type Address, encodeFunctionData, parseAbi } from "viem"
 import {
   useConfig,
   usePrepareTransactionRequest,
@@ -10,23 +10,25 @@ import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
 import { reverseRegistrarSetNameSnippet } from "@ensdomains/ensjs/contracts"
+import { NameData } from "../useNameData"
 
-// const setNameAbi = parseAbi(["function setName(string memory name)"])
+const setNameAbi = parseAbi(["function setName(string memory name)"])
 
 export const useSetPrimaryName = ({
+  nameData,
   targetAddress,
   primaryNameOption,
-  name,
 }: {
+  nameData: NameData
   targetAddress: Address
-  name: string
   primaryNameOption: PrimaryOption
 }) => {
   const reverseRegistarAddress = primaryNameOption.reverseRegistarAddress
 
   const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
 
-  const { data: isAddressAndChainValid, isLoading: isCheckLoading } = useCheckAddressAndChain({
+  const isAddressAndChainValid = useCheckAddressAndChain({
+
     address: targetAddress,
     chainId: primaryNameOption?.chain.id,
   })
@@ -34,13 +36,17 @@ export const useSetPrimaryName = ({
   const config = useConfig()
 
   console.log("useSetPrimaryName",{
-    name,
+    name: nameData.name,
     to: reverseRegistarAddress,
     chainId: primaryNameOption?.chain.id,
     data: encodeFunctionData({
       abi: reverseRegistrarSetNameSnippet,
-      args: [name],
-    })
+      args: [nameData.name],
+    }),
+    data2: encodeFunctionData({
+      abi: setNameAbi,
+      args: [nameData.name],
+    }),
   })
 
   const {
@@ -53,7 +59,7 @@ export const useSetPrimaryName = ({
     chainId: primaryNameOption.chain.id,
     data: encodeFunctionData({
       abi: reverseRegistrarSetNameSnippet,
-      args: [name],
+      args: [nameData.name],
     }),
   })
 
@@ -64,6 +70,7 @@ export const useSetPrimaryName = ({
     // isSuccess,
     // data: hash,
     error: sendError,
+    reset: resetSend,
   } = useSendTransaction({
     mutation: {
       onSuccess: (data: `0x${string}`) => {
@@ -85,6 +92,7 @@ export const useSetPrimaryName = ({
   //   chainId: primaryNameOption?.chain.id,
   // })
 
+  console.log("useSetPrimaryName preparedRequest", preparedRequest)
   const execute = async () => {
     if (!preparedRequest) return
     sendTransaction(preparedRequest)
@@ -92,7 +100,7 @@ export const useSetPrimaryName = ({
 
   const currentTransaction = getCurrentTransaction()
   const status = calculateTransactionStatus({
-    isLoading: isCheckLoading,
+    isLoading: false,
     isOutOfSync: !isAddressAndChainValid,
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
@@ -102,14 +110,13 @@ export const useSetPrimaryName = ({
     isError: currentTransaction?.status === "failed" || !!prepareError || !!sendError,
   })
 
-  const error = prepareError || sendError
-
   return {
     status,
-    error,
+    error: prepareError || sendError,
     execute,
     reset: () => {
       refetch()
+      resetSend()
       updateView(position, {
         transaction: undefined
       })

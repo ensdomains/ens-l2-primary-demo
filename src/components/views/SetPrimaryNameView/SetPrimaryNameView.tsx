@@ -4,7 +4,7 @@ import {
   ViewToViewProps,
 } from "../../../stores/transactionStore"
 import { TransactionView } from "@/components/views/TransactionView/TransactionView"
-import { ChangeWalletView } from "../ChangeWalletView/ChangeWalletView"
+import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
 import { useSetPrimaryName } from "../../../hooks/send-transactions/useSetPrimaryName"
 import { shortenAddress } from "../../../utils/address"
 import { match } from "ts-pattern"
@@ -59,7 +59,7 @@ export const SetPrimaryNameView = ({
   const { status, execute, error, reset } = useSetPrimaryName({
     targetAddress: targetAddress,
     primaryNameOption,
-    name: nameData.name,
+    nameData,
   })
 
   console.log("useSetPrimaryName", { status, error })
@@ -68,8 +68,23 @@ export const SetPrimaryNameView = ({
     .with("loading", () => <div>Loading...</div>)
     .with("syncAddressOrChain", () => {
       return (
-        <ChangeWalletView
+        <SyncWalletAndNetworkView
+          requiredAddress={targetAddress}
+          requiredChainId={primaryNameOption.chain.id}
           title={`Set ${primaryNameOption?.name} primary name`}
+          subtitle={
+            <span>
+              To set <b>{primaryNameOption?.name}</b> as your Primary Name, you
+              must update the&nbsp;
+              <b>{primaryNameOption.chain.name} record</b> to this address.
+            </span>
+          }
+          subtitle2={
+            <span>
+              Please connect with&nbsp;
+              <b>{shortenAddress(targetAddress)}</b> to complete this transaction.
+            </span>
+          }
           helperText={
             <span>
               Please connect with <b>{shortenAddress(targetAddress)}</b> to

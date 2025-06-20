@@ -4,7 +4,7 @@ import {
   ViewBase,
 } from "../../../stores/transactionStore"
 import { TransactionView } from "@/components/views/TransactionView/TransactionView"
-import { ChangeWalletView } from "../ChangeWalletView/ChangeWalletView"
+import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
 import { useSetPrimaryName } from "../../../hooks/send-transactions/useSetPrimaryName"
 import { shortenAddress } from "../../../utils/address"
 import { match } from "ts-pattern"
@@ -33,12 +33,13 @@ export const DeletePrimaryNameView = ({
   nameData,
   primaryNameOption,
 }: ViewToViewProps<DeletePrimaryNameView>) => {
+
   const { increment, decrement } = useTransactionStore()
 
   const { status, execute, error, reset } = useSetPrimaryName({
     targetAddress,
     primaryNameOption,
-    name: "",
+    nameData,
   })
 
   console.log("useSetPrimaryName", { status, error })
@@ -46,7 +47,9 @@ export const DeletePrimaryNameView = ({
   return match(status)
     .with("loading", () => <div>Loading</div>)
     .with("syncAddressOrChain", () => (
-      <ChangeWalletView
+      <SyncWalletAndNetworkView
+        requiredAddress={targetAddress}
+        requiredChainId={primaryNameOption.chain.id}
         title={`Delete ${primaryNameOption?.name} primary name`}
         subtitle={
           <span>

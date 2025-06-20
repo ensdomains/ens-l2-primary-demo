@@ -197,7 +197,7 @@ export const OptionNameRecordItem = ({
     name: value,
   })
   return match(status)
-    .with(P.union("none-set", "incomplete"), () => (
+    .with(P.union("none-set", "incomplete", "syncing"), () => (
       <div className={noneSet}>
         <Typography fontVariant='body' color='textSecondary'>
           None set

@@ -15,6 +15,9 @@ import { Typography } from "@ensdomains/thorin"
 import { match } from "ts-pattern"
 import { useDefaultPrimaryNamesForAddresses } from "@/hooks/useDefaultPrimaryNamesForAddresses"
 import { isDefined } from "@/utils/predicates"
+import { Divider } from "@/components/atoms/Divider/Divider"
+import { isLastIndex } from "@/utils/array"
+import { Fragment } from "react"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -26,7 +29,6 @@ export const NameCentricDefaultPrimaryNameOption = ({
   name: string
   option: PrimaryOption
 }) => {
-
   const { createTransactionFlow, isFlowConfirming } = useTransactionStore()
 
   const {
@@ -45,11 +47,11 @@ export const NameCentricDefaultPrimaryNameOption = ({
         (address, index, self) =>
           address !== EMPTY_ADDRESS && self.indexOf(address) === index,
       ) || []
-  console.log("addresses", addresses)
 
   const defaultPrimaryNames = useDefaultPrimaryNamesForAddresses({
     addresses,
   })
+  console.log("defaultPrimaryNames", defaultPrimaryNames)
 
   const defaultPrimaryNameAddresses = defaultPrimaryNames
     .filter(({ data }) => data?.name === name)
@@ -62,7 +64,7 @@ export const NameCentricDefaultPrimaryNameOption = ({
     ({ isFetching }) => isFetching,
   )
 
-  const status: PrimaryNameOptionStatus = match({
+  const status: PrimaryNameOptionStatus | "" = match({
     isLoading: isNameDataLoading || isDefaultPrimaryNameAddressesLoading,
     isFetching: isNameDataFetching || isDefaultPrimaryNameAddressesFetching,
     isConfirming: isFlowConfirming(transactionKey(name, option)),
@@ -71,70 +73,81 @@ export const NameCentricDefaultPrimaryNameOption = ({
     .with({ isConfirming: true }, () => "confirming" as const)
     .with({ isLoading: true }, () => "loading" as const)
     .with({ isFetching: true }, () => "fetching" as const)
-    .with({ count: 0 }, () => "none-set" as const)
-    .otherwise(() => "active" as const)
+    .otherwise(() => "" as const)
 
   return (
     <>
       <OptionTitle option={option} />
       <OptionDescription option={option} />
-      {defaultPrimaryNameAddresses.map((address) => (
-        <>
-          <OptionContent
-            label='Address'
-            status={status}
-            incompleteMsg='To use this as your Primary Name you must update the address record'
-            syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
-          >
-            <OptionAddressRecordItem
-              value={address}
+      {defaultPrimaryNames.map(({data}, index, array) => {
+        const address = data?.address
+        if (!address) return null
+        const defaultName = data?.name
+        const status = defaultName === name ? "active" : "incomplete"
+        return (
+          <Fragment key={address}>
+            <OptionContent
+              label='Address'
               status={status}
-              onDelete={() => {
-                if (!address || !nameData) return
-                createTransactionFlow(transactionKey(name, option), {
-                  views: [{
-                    name: "delete-primary-name",
-                    type: "transaction",
-                    nameData,
-                    targetAddress: address,
-                    primaryNameOptionId: option.id,
-                  }],
-                })
-              }}
-            />
-          </OptionContent>
-          <OptionSupportedChains nameData={nameData} address={address} />
-        </>
-      ))}
+              incompleteMsg='To use this as your Primary Name you must update the address record'
+              syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
+            >
+              <OptionAddressRecordItem
+                value={address}
+                status={status}
+                onDelete={() => {
+                  if (!address || !nameData) return
+                  createTransactionFlow(transactionKey(name, option), {
+                    views: [
+                      {
+                        name: "delete-primary-name",
+                        type: "transaction",
+                        nameData,
+                        targetAddress: address,
+                        primaryNameOptionId: option.id,
+                      },
+                    ],
+                  })
+                }}
+              />
+            </OptionContent>
+            <OptionSupportedChains nameData={nameData} address={address} />
+            {!isLastIndex(index, array) && <Divider />}
+          </Fragment>
+        )
+      })}
       {import.meta.env.DEV && (
         <div>
           {defaultPrimaryNameAddresses.map((addr) => (
-          <Typography fontVariant='extraSmall'>
-            sourceValue: {addr}
-          </Typography>))}
+            <Typography fontVariant='extraSmall' key={addr}>
+              sourceValue: {addr}
+            </Typography>
+          ))}
           {nameData?.coins.map((coin) => (
-            <Typography fontVariant='extraSmall'>
+            <Typography fontVariant='extraSmall' key={coin.id}>
               record: {coin.id} : {coin.value}
             </Typography>
           ))}
         </div>
       )}
       <OptionAction
-        status={status}
+        status={status || "active"}
         onClick={() => {
           if (!nameData) return
-          createTransactionFlow(
-            transactionKey(name, option),
-            {
-              views: [{
+          createTransactionFlow(transactionKey(name, option), {
+            views: [
+              {
                 name: "select-address-with-chains",
                 type: "input",
-                addressData: defaultPrimaryNames.map(({data}) => data).filter(isDefined),
+                addressData: defaultPrimaryNames
+                  .map(({ data }) => data)
+                  .filter(isDefined),
                 nameData: nameData,
                 primaryNameOptionId: option.id,
-                targetAddress: defaultPrimaryNames?.[0]?.data?.address ?? '',
-                coinTypes: []
-              }],            
+                targetAddress: defaultPrimaryNames?.[0]?.data?.address ?? "",
+                coinTypes: [],
+              },
+            ],
           })
         }}
       />

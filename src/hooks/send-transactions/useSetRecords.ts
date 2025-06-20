@@ -22,13 +22,18 @@ export const useSetRecords = ({
   targetAddress: Address
   resolverAddress: Address
 }) => {
-
-  const { addTransaction, getCurrentViewPosition, getCurrentTransaction } = useTransactionStore()
+  
+  const {
+    addTransaction,
+    getCurrentViewPosition,
+    getCurrentTransaction,
+    updateView,
+  } = useTransactionStore()
 
   const currentTransaction = getCurrentTransaction()
   console.log("currentTransaction", currentTransaction)
 
-  const { data: isAddressAndChainValid, isLoading: isCheckLoading } =
+  const isAddressAndChainValid =
     useCheckAddressAndChain({
       address: nameData.ownership.owner,
       chainId: ethereum.id,
@@ -59,6 +64,7 @@ export const useSetRecords = ({
     sendTransaction,
     isPending,
     error: sendError,
+    reset: resetSend,
   } = useSendTransaction({
     mutation: {
       onSuccess: (data: `0x${string}`) => {
@@ -83,14 +89,15 @@ export const useSetRecords = ({
     sendTransaction({ ...preparedRequest, to: resolverAddress })
 
   const status = calculateTransactionStatus({
-    isLoading: isCheckLoading,
+    isLoading: false,
     isOutOfSync: !isAddressAndChainValid,
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
     isPending: isPending,
     isSent: currentTransaction?.status === "sent",
     isConfirmed: currentTransaction?.status === "confirmed",
-    isError: currentTransaction?.status === "failed" || !!prepareError || !!sendError,
+    isError:
+      currentTransaction?.status === "failed" || !!prepareError || !!sendError,
   })
 
   return {
@@ -99,6 +106,10 @@ export const useSetRecords = ({
     error: prepareError || sendError,
     reset: () => {
       refetchPrepare()
+      resetSend()
+      updateView(position, {
+        transaction: undefined,
+      })
     },
   }
 }

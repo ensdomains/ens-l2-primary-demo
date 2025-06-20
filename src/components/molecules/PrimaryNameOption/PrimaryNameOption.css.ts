@@ -117,6 +117,7 @@ export const supportedChainsContainer = style({
   flexDirection: 'row',
   flexWrap: 'wrap',
   gap: commonVars.space['2'],
+  marginTop: `calc(${commonVars.space['2']} * -1)`,
 })
 
 export const supportedChainItemContainer = style({

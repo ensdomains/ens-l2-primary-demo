@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
 import { Address } from "viem"
-import { getL1PrimaryNameSource } from "./useSourcePrimaryName/functions/getL1PrimaryNameSource"
+import { getDefaultPrimaryNameSource } from "./useSourcePrimaryName/functions/getL1PrimaryNameSource"
 import { ethereum } from "@/constants/chains"
 import { useConfig } from "wagmi"
 
@@ -9,7 +9,7 @@ export const useDefaultPrimaryNamesForAddresses = ({addresses}: {addresses: Addr
   return useQueries({
     queries: addresses.map((address) => ({
       queryKey: [{ address, primaryNameOptionId: 0}, ethereum.id, address, undefined, 'getPrimaryNameSource'] as const,
-      queryFn: getL1PrimaryNameSource('default')(config),
+      queryFn: getDefaultPrimaryNameSource(config),
       select: (data: unknown) => {
         return {
           name: data as string,

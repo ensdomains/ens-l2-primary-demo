@@ -19,8 +19,9 @@ const contractAddresses: Record<number, Record<string, Address>> = {
   [mainnet.id]: {},
   [sepolia.id]: {
     ensDefaultReverseRegistrar: "0x089C3F89e6eE8bAc40aFA96267a1c84003109d1b",
+    ensReverseRegistrar: "0xA0a1AbcDAe1a2a4A2EF8e9113Ff0e02DD81DC0C6",
     // ensUniversalResolver: "0xC087fF4e7D743c3ae6673FF5d42391b741369169",
-    ensUniversalResolver: "0xB95CD2A59111d08BBeD6863218fa21009142d02b",
+    ensUniversalResolver: "0xb7b7dadf4d42a08b3ec1d3a1079959dfbc8cffcc",
   },
   [optimism.id]: {},
   [optimismSepolia.id]: {
