@@ -141,7 +141,7 @@ export const NameCentricPrimaryNameOption = ({
                 targetAddress: address,
                 nameData: nameData,
                 primaryNameOptionId: option.id,
-                sourceValue: sourceValue ?? "",
+                sourceValue: sourceValue ?? "dummy",
               }
             ],
           })

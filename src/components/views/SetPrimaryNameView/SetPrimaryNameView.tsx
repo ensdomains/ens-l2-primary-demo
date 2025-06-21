@@ -20,24 +20,24 @@ import { P } from "ts-pattern"
 
 export const isSetPrimaryNameView = (
   view: unknown,
-): view is SetPrimaryNameView => isViewBase(view) && view.name === "set-name"
+): view is SetPrimaryNameView => isViewBase(view) && view.name === "set-primary-name"
 
 export const isValidSetPrimaryNameView = P.intersection(
   {
-    name: "set-name",
+    name: "set-primary-name",
     type: "transaction",
     nameData: isValidNameData,
     targetAddress: isValidAddress,
     primaryNameOptionId: isValidPrimaryNameOptionId,
   },
   P.when(
-    (view: unknown) =>
-      isSetPrimaryNameView(view) && view.nameData?.name !== view.sourceValue,
+    (view: unknown) =>{
+      return isSetPrimaryNameView(view) && view.nameData?.name !== view.sourceValue}
   ),
 )
 
 export interface SetPrimaryNameView extends ViewBase {
-  name: "set-name"
+  name: "set-primary-name"
   type: "transaction"
   nameData: NameData
   targetAddress: Address

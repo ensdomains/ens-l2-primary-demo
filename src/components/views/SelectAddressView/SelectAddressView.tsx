@@ -42,15 +42,17 @@ export const calculateSelectAddressTransactionFlow = ({
   nameData,
   targetAddress,
   primaryNameOptionId,
+  sourceValue,
 }: SelectAddressView) => {
   if (!targetAddress || !isAddress(targetAddress)) return []
   return [
     match({
-      name: "set-name",
+      name: "set-primary-name",
       type: "transaction",
       nameData,
       targetAddress,
       primaryNameOptionId,
+      sourceValue,
     } satisfies SetPrimaryNameView)
       .with(isValidSetPrimaryNameView, (view) => view)
       .otherwise(() => undefined),
@@ -91,10 +93,13 @@ export const SelectAddressView = ({
 
   // react query deprecated onSuccess so now we have to use a useEffect to update the view
   useEffect(() => {
-    updateView(getCurrentViewPosition(), {
-      sourceValue: sourceValue ?? "",
-    })
-  }, [sourceValue])
+    if (!isFetching) {
+      updateView(getCurrentViewPosition(), {
+        sourceValue: sourceValue ?? "",
+      })
+      generateTransactions()
+    }    
+  }, [sourceValue, isFetching])
 
   const isLoadingOrFetching = isLoading || isFetching
 
@@ -111,13 +116,11 @@ export const SelectAddressView = ({
               updateView(getCurrentViewPosition(), {
                 targetAddress: e.target.value,
               })
-              generateTransactions()
             }}
             onClickAction={() => {
               updateView(getCurrentViewPosition(), {
                 targetAddress: "",
               })
-              generateTransactions()
             }}
           />
         </div>

@@ -14,7 +14,6 @@ export const ChangeChainView = ({
     chains.find((chain) => chain.id === requiredChainId)?.name || "unknown"
   return (
     <>
-      <Dialog.Heading title={`Cannot connect to ${network}`} alert='warning' />
       <Dialog.Content>
         <Typography fontVariant='body' textAlign='center'>
           Please connect to <b>{shortenAddress(requiredAddress)}</b> on&nbsp;

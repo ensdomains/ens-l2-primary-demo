@@ -48,7 +48,7 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
   if (!nameData || !isAddress(targetAddress)) return []
   return [
     match({
-      name: "set-name" as const,
+      name: "set-primary-name" as const,
       type: "transaction" as const,
       nameData,
       targetAddress,

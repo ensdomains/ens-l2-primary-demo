@@ -15,7 +15,6 @@ import "./index.css"
 import "./index2.css"
 import { Layout } from "./components/layouts/Layout/Layout.tsx"
 import { IdentifierPage } from "./components/pages/IdentifierPage.tsx"
-import { TransactionStoreWatcher } from "./utils/TransactionStoreWatcher.tsx"
 import { SplashPage } from "./components/pages/SplashPage.tsx"
 
 globalThis.Buffer = Buffer
@@ -28,7 +27,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <ThemeProvider defaultMode='light'>
-            <TransactionStoreWatcher>
             <Layout>
               <BrowserRouter>
                 <Routes>
@@ -37,7 +35,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 </Routes>
                 </BrowserRouter>
               </Layout>
-            </TransactionStoreWatcher>
           </ThemeProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

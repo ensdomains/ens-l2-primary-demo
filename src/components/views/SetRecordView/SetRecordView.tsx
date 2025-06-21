@@ -7,11 +7,13 @@ import { TransactionView } from "@/components/views/TransactionView/TransactionV
 import { useSetRecord } from "../../../hooks/send-transactions/useSetRecord"
 import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
 import { shortenAddress } from "../../../utils/address"
-import { match } from "ts-pattern"
+import { match, P } from "ts-pattern"
 import { Address } from "viem"
 import { NameData } from "@/hooks/useNameData"
-import { isValidPrimaryNameOptionId } from "@/utils/predicates"
+import { isValidPrimaryNameOptionId, isViewBase } from "@/utils/predicates"
 import { isValidNameData, isValidAddress } from "@/utils/predicates"
+import { primaryNameOptions } from "@/constants/primaryNameOptions"
+import { nameDataHasRecord } from "@/utils/nameData"
 
 export interface SetRecordView extends ViewBase {
   name: "set-record"
@@ -21,13 +23,29 @@ export interface SetRecordView extends ViewBase {
   primaryNameOptionId: number
 }
 
-export const isValidSetRecordView = {
+export const isSetRecordView = (view: unknown): view is SetRecordView =>
+  isViewBase(view) && view.name === "set-record"
+
+export const isValidSetRecordView = P.intersection({
   name: "set-record",
   type: "transaction",
   nameData: isValidNameData,
   targetAddress: isValidAddress,
   primaryNameOptionId: isValidPrimaryNameOptionId,
-} as const
+}, P.when((view) => {
+  if (!isSetRecordView(view)) return false
+  const primaryOption = primaryNameOptions.find((option) => option.id === view.primaryNameOptionId)!
+  console.log("nameDataHasRecord", {
+    nameData: view.nameData,
+    coinType: primaryOption.chain.coinType,
+    value: view.targetAddress,
+  })
+  return !nameDataHasRecord({
+    nameData: view.nameData,
+    coinType: primaryOption.chain.coinType,
+    value: view.targetAddress,
+  })
+}))
 
 export const SetRecordView = ({
   nameData,

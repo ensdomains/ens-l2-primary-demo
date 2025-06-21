@@ -138,7 +138,7 @@ export const OptionAddressRecordItem = ({
 }) => {
   const { copy, copied } = useCopied()
   return match(status)
-    .with("none-set", () => (
+    .with(P.union("none-set", "incomplete", "syncing"), () => (
       <div className={noneSet}>
         <Typography fontVariant='body' color='textSecondary'>
           None set
