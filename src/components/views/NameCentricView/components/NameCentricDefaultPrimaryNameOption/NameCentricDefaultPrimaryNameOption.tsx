@@ -73,7 +73,7 @@ export const NameCentricDefaultPrimaryNameOption = ({
     .with({ isConfirming: true }, () => "confirming" as const)
     .with({ isLoading: true }, () => "loading" as const)
     .with({ isFetching: true }, () => "fetching" as const)
-    .otherwise(() => "" as const)
+    .otherwise(() => "active" as const)
 
   return (
     <>
@@ -83,18 +83,18 @@ export const NameCentricDefaultPrimaryNameOption = ({
         const address = data?.address
         if (!address) return null
         const defaultName = data?.name
-        const status = defaultName === name ? "active" : "incomplete"
+        const optionStatus = defaultName === name ? "active" : "incomplete"
         return (
           <Fragment key={address}>
             <OptionContent
               label='Address'
-              status={status}
+              status={optionStatus}
               incompleteMsg='To use this as your Primary Name you must update the address record'
               syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
             >
               <OptionAddressRecordItem
                 value={address}
-                status={status}
+                status={optionStatus}
                 onDelete={() => {
                   if (!address || !nameData) return
                   createTransactionFlow(transactionKey(name, option), {

@@ -21,6 +21,7 @@ import {
   isValidSetRecordView,
   SetRecordView,
 } from "../SetRecordView/SetRecordView"
+import { filterUnneededWarning, isValidSyncTimeWarningView, SyncTimeWarningView } from "../SyncTimeWarning/SyncTimeWarning"
 
 export interface SelectAddressView extends ViewBase {
   name: "select-address"
@@ -65,7 +66,15 @@ export const calculateSelectAddressTransactionFlow = ({
     } satisfies SetRecordView)
       .with(isValidSetRecordView, (view) => view)
       .otherwise(() => undefined),
+    match({
+      name: "sync-time-warning",
+      type: "info",
+      primaryNameOptionId,
+    } satisfies SyncTimeWarningView)
+    .with(isValidSyncTimeWarningView, (view) => view)
+    .otherwise(() => undefined)
   ].filter(isDefined)
+  .filter(filterUnneededWarning)
 }
 
 export const SelectAddressView = ({

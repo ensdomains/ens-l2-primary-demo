@@ -20,6 +20,11 @@ import {
   SetRecordsView,
 } from "../SetRecordsView/SetRecordsView"
 import { nameDataCoinTypesWithAddress } from "@/utils/nameData"
+import {
+  filterUnneededWarning,
+  isValidSyncTimeWarningView,
+  SyncTimeWarningView,
+} from "../SyncTimeWarning/SyncTimeWarning"
 
 export interface SelectNameWithChainsView extends ViewBase {
   name: "select-name-with-chains"
@@ -48,8 +53,8 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
   if (!nameData || !isAddress(targetAddress)) return []
   return [
     match({
-      name: "set-primary-name" as const,
-      type: "transaction" as const,
+      name: "set-primary-name",
+      type: "transaction",
       nameData,
       targetAddress,
       primaryNameOptionId,
@@ -58,8 +63,8 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
       .with(isValidSetPrimaryNameView, (view) => view)
       .otherwise(() => undefined),
     match({
-      name: "set-records" as const,
-      type: "transaction" as const,
+      name: "set-records",
+      type: "transaction",
       nameData,
       targetAddress,
       primaryNameOptionId,
@@ -72,7 +77,16 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
     } satisfies SetRecordsView)
       .with(isValidSetRecordsView, (view) => view)
       .otherwise(() => undefined),
-  ].filter(isDefined)
+    match({
+      name: "sync-time-warning",
+      type: "info",
+      primaryNameOptionId,
+    } satisfies SyncTimeWarningView)
+      .with(isValidSyncTimeWarningView, (view) => view)
+      .otherwise(() => undefined),
+  ]
+    .filter(isDefined)
+    .filter(filterUnneededWarning)
 }
 
 export const SelectNameWithChainsView = ({
@@ -93,7 +107,10 @@ export const SelectNameWithChainsView = ({
   const onNameDataChange = (nameData?: NameData | null) => {
     updateView(getCurrentViewPosition(), {
       nameData,
-      coinTypes: nameDataCoinTypesWithAddress({nameData, address: targetAddress}),
+      coinTypes: nameDataCoinTypesWithAddress({
+        nameData,
+        address: targetAddress,
+      }),
     })
     generateTransactions()
   }

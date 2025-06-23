@@ -19,6 +19,11 @@ import {
   isValidSetRecordsView,
   SetRecordsView,
 } from "../SetRecordsView/SetRecordsView"
+import {
+  filterUnneededWarning,
+  isValidSyncTimeWarningView,
+  SyncTimeWarningView,
+} from "../SyncTimeWarning/SyncTimeWarning"
 
 export interface SelectAddressWithChainsView extends ViewBase {
   name: "select-address-with-chains"
@@ -27,7 +32,7 @@ export interface SelectAddressWithChainsView extends ViewBase {
   targetAddress: string | Address
   addressData: { address: Address; name: string }[]
   coinTypes: number[]
-  subView?: 'select-address' | 'select-chains'
+  subView?: "select-address" | "select-chains"
 }
 
 export const isValidSelectAddressWithChainsView = {
@@ -52,7 +57,9 @@ export const calculateSelectAddressWithChainsTransactionFlow = ({
       nameData,
       targetAddress,
       primaryNameOptionId,
-      sourceValue: addressData.find(({ address }) => address === targetAddress)?.name ?? '',
+      sourceValue:
+        addressData.find(({ address }) => address === targetAddress)?.name ??
+        "",
     } satisfies SetPrimaryNameView)
       .with(isValidSetPrimaryNameView, (view) => view)
       .otherwise(() => undefined),
@@ -63,12 +70,24 @@ export const calculateSelectAddressWithChainsTransactionFlow = ({
       targetAddress,
       primaryNameOptionId,
       coinTypes: coinTypes.filter(
-        (coinType) => !nameData.coins.some((c) => c.coinType === coinType && c.value === targetAddress),
+        (coinType) =>
+          !nameData.coins.some(
+            (c) => c.coinType === coinType && c.value === targetAddress,
+          ),
       ),
     } satisfies SetRecordsView)
       .with(isValidSetRecordsView, (view) => view)
       .otherwise(() => undefined),
-  ].filter(isDefined)
+    match({
+      name: "sync-time-warning",
+      type: "info",
+      primaryNameOptionId,
+    } satisfies SyncTimeWarningView)
+      .with(isValidSyncTimeWarningView, (view) => view)
+      .otherwise(() => undefined),
+  ]
+    .filter(isDefined)
+    .filter(filterUnneededWarning)
 }
 
 export const SelectAddressWithChainsView = ({
@@ -76,9 +95,8 @@ export const SelectAddressWithChainsView = ({
   targetAddress,
   addressData,
   coinTypes,
-  subView = 'select-address',
+  subView = "select-address",
 }: ViewToViewProps<SelectAddressWithChainsView>) => {
-
   const {
     updateView,
     getCurrentViewPosition,
@@ -98,7 +116,10 @@ export const SelectAddressWithChainsView = ({
 
   const onCoinTypesChange = (coinType: number, selected: boolean) => {
     updateView(getCurrentViewPosition(), {
-      coinTypes: [...coinTypes.filter((c) => c !== coinType), ...(selected ? [coinType] : [])],
+      coinTypes: [
+        ...coinTypes.filter((c) => c !== coinType),
+        ...(selected ? [coinType] : []),
+      ],
     })
     generateTransactions()
   }
@@ -122,7 +143,10 @@ export const SelectAddressWithChainsView = ({
           .with("select-chains", () => (
             <SelectChainsComponent
               selectedCoinTypes={coinTypes}
-              disabledCoinTypes={nameDataCoinTypesWithAddress({ nameData, address: targetAddress })}
+              disabledCoinTypes={nameDataCoinTypesWithAddress({
+                nameData,
+                address: targetAddress,
+              })}
               onChange={onCoinTypesChange}
             />
           ))

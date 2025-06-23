@@ -936,8 +936,8 @@ export const useResolvedPrimaryName = ({
   address,
   coinType
 }: {
-  address: Address
-  coinType: number
+  address?: Address
+  coinType?: number
 }) => {
   return useReadContract({
     address: getChainContractAddress({

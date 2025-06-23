@@ -32,6 +32,7 @@ import { type SetPrimaryNameView } from "@/components/views/SetPrimaryNameView/S
 import { type SetRecordView } from "@/components/views/SetRecordView/SetRecordView"
 import { type DeletePrimaryNameView } from "@/components/views/DeletePrimaryNameView/DeletePrimaryNameView"
 import { isValidSelectAddressWithChainsView } from "../components/views/SelectAddressWithChainsView/SelectAddressWithChainsView"
+import { QueryClient } from "@tanstack/react-query"
 
 type ViewName =
   | "select-name"
@@ -46,7 +47,7 @@ type ViewName =
 
 export interface ViewBase {
   name: ViewName
-  type: "input" | "transaction"
+  type: "input" | "transaction" | "info"
   transaction?: Transaction
   nameData?: NameData | null
   targetAddress?: string | Address | null
@@ -109,6 +110,7 @@ interface TransactionStore {
     payload: {
       transaction: Transaction
       config: Config
+      queryClient: QueryClient
     },
   ) => Promise<void>
   createTransactionFlow: (
@@ -137,7 +139,10 @@ export const useTransactionStore = create<TransactionStore>()(
         transactions: {},
         flows: {},
         currentKey: null,
-        addTransaction: async ({ key, viewIndex }, { transaction, config }) => {
+        addTransaction: async (
+          { key, viewIndex },
+          { transaction, config, queryClient },
+        ) => {
           set((state) => ({
             ...state,
             flows: {
@@ -152,26 +157,31 @@ export const useTransactionStore = create<TransactionStore>()(
           }))
           try {
             await waitForTransactionReceipt(config, { hash: transaction.hash })
-            set((state) => ({
-              ...state,
-              flows: {
-                ...state.flows,
-                [key]: {
-                  ...state.flows[key],
-                  views: state.flows[key].views.map((v, i) =>
-                    i === viewIndex
-                      ? {
-                          ...v,
-                          transaction: {
-                            hash: transaction.hash,
-                            status: "confirmed",
-                          },
-                        }
-                      : v,
-                  ),
+            set(
+              (state) => ({
+                ...state,
+                flows: {
+                  ...state.flows,
+                  [key]: {
+                    ...state.flows[key],
+                    views: state.flows[key].views.map((v, i) =>
+                      i === viewIndex
+                        ? {
+                            ...v,
+                            transaction: {
+                              hash: transaction.hash,
+                              status: "confirmed",
+                            },
+                          }
+                        : v,
+                    ),
+                  },
                 },
-              },
-            }))
+              }),
+              false,
+              "transaction-confirmed",
+            )
+            queryClient.invalidateQueries()
           } catch (error) {
             set((state) => ({
               ...state,
@@ -196,27 +206,31 @@ export const useTransactionStore = create<TransactionStore>()(
           }
         },
         createTransactionFlow: (key, payload) => {
-          set((state) => {
-            console.log(
-              "createTransactionFlow",
-              { key, payload },
-              payload.viewIndex ?? 0,
-            )
-            console.log("state", state)
-            const newState = {
-              ...state,
-              flows: {
-                ...state.flows,
-                [key]: {
-                  ...payload,
-                  viewIndex: payload.viewIndex ?? 0,
+          set(
+            (state) => {
+              console.log(
+                "createTransactionFlow",
+                { key, payload },
+                payload.viewIndex ?? 0,
+              )
+              console.log("state", state)
+              const newState = {
+                ...state,
+                flows: {
+                  ...state.flows,
+                  [key]: {
+                    ...payload,
+                    viewIndex: payload.viewIndex ?? 0,
+                  },
                 },
-              },
-              currentKey: key,
-            }
-            console.log("newState", newState)
-            return newState
-          }, false, "createTransactionFlow")
+                currentKey: key,
+              }
+              console.log("newState", newState)
+              return newState
+            },
+            false,
+            "createTransactionFlow",
+          )
           get().generateTransactions()
         },
         increment: () =>
@@ -271,30 +285,34 @@ export const useTransactionStore = create<TransactionStore>()(
             }
           }),
         updateView: (viewPosition, payload) =>
-          set((state) => {
-            if (!viewPosition) return state
+          set(
+            (state) => {
+              if (!viewPosition) return state
 
-            const { key, viewIndex } = viewPosition
-            const flow = state.flows[key]
-            if (!flow) return state
+              const { key, viewIndex } = viewPosition
+              const flow = state.flows[key]
+              if (!flow) return state
 
-            const view = flow.views[viewIndex]
-            if (!view) return state
+              const view = flow.views[viewIndex]
+              if (!view) return state
 
-            const newView = { ...view, ...payload } as View
-            return {
-              ...state,
-              flows: {
-                ...state.flows,
-                [key]: {
-                  ...flow,
-                  views: flow.views.map((v, i) =>
-                    i === viewIndex ? newView : v,
-                  ),
+              const newView = { ...view, ...payload } as View
+              return {
+                ...state,
+                flows: {
+                  ...state.flows,
+                  [key]: {
+                    ...flow,
+                    views: flow.views.map((v, i) =>
+                      i === viewIndex ? newView : v,
+                    ),
+                  },
                 },
-              },
-            }
-          }, false, "updateView"),
+              }
+            },
+            false,
+            "updateView",
+          ),
         hasNext: () => {
           const { flow } = get().getCurrentFlow()
           if (!flow) return false
@@ -332,25 +350,29 @@ export const useTransactionStore = create<TransactionStore>()(
           return { view, key, viewIndex }
         },
         appendViews: (views: View[]) =>
-          set((state) => {
-            const currentKey = get().currentKey
-            if (!currentKey) return state
+          set(
+            (state) => {
+              const currentKey = get().currentKey
+              if (!currentKey) return state
 
-            const flow = get().flows[currentKey]
-            if (!flow) return state
+              const flow = get().flows[currentKey]
+              if (!flow) return state
 
-            const currentSlice = flow.views.slice(0, flow.viewIndex + 1)
-            return {
-              ...state,
-              flows: {
-                ...state.flows,
-                [currentKey]: {
-                  ...flow,
-                  views: [...currentSlice, ...views],
+              const currentSlice = flow.views.slice(0, flow.viewIndex + 1)
+              return {
+                ...state,
+                flows: {
+                  ...state.flows,
+                  [currentKey]: {
+                    ...flow,
+                    views: [...currentSlice, ...views],
+                  },
                 },
-              },
-            }
-          }, false, "appendViews"),
+              }
+            },
+            false,
+            "appendViews",
+          ),
         getCurrentViewPosition: () => {
           const currentKey = get().currentKey
           if (!currentKey) return null

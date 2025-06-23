@@ -1,4 +1,4 @@
-import { type Address, encodeFunctionData, parseAbi } from "viem"
+import { type Address, encodeFunctionData } from "viem"
 import {
   useConfig,
   usePrepareTransactionRequest,
@@ -11,8 +11,7 @@ import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
 import { reverseRegistrarSetNameSnippet } from "@ensdomains/ensjs/contracts"
 import { NameData } from "../useNameData"
-
-const setNameAbi = parseAbi(["function setName(string memory name)"])
+import { useQueryClient } from "@tanstack/react-query"
 
 export const useSetPrimaryName = ({
   nameData,
@@ -27,27 +26,14 @@ export const useSetPrimaryName = ({
 
   const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
 
-  const isAddressAndChainValid = useCheckAddressAndChain({
+  const queryClient = useQueryClient()
 
+  const isAddressAndChainValid = useCheckAddressAndChain({
     address: targetAddress,
     chainId: primaryNameOption?.chain.id,
   })
 
   const config = useConfig()
-
-  console.log("useSetPrimaryName",{
-    name: nameData.name,
-    to: reverseRegistarAddress,
-    chainId: primaryNameOption?.chain.id,
-    data: encodeFunctionData({
-      abi: reverseRegistrarSetNameSnippet,
-      args: [nameData.name],
-    }),
-    data2: encodeFunctionData({
-      abi: setNameAbi,
-      args: [nameData.name],
-    }),
-  })
 
   const {
     data: preparedRequest,
@@ -61,6 +47,9 @@ export const useSetPrimaryName = ({
       abi: reverseRegistrarSetNameSnippet,
       args: [nameData.name],
     }),
+    query: {
+      enabled: isAddressAndChainValid,
+    }
   })
 
   const position = getCurrentViewPosition()
@@ -81,6 +70,7 @@ export const useSetPrimaryName = ({
             hash: data,
           },
           config,
+          queryClient,
         })
       },
     },

@@ -15,8 +15,19 @@ import { nameDataHasRecord } from "@/utils/nameData"
 import { Address, isAddress } from "viem"
 import { isDefined, isValidAddress } from "@/utils/predicates"
 import { isValidPrimaryNameOptionId } from "@/utils/predicates"
-import { isValidSetPrimaryNameView, SetPrimaryNameView } from "../SetPrimaryNameView/SetPrimaryNameView"
-import { isValidSetRecordView, SetRecordView } from "../SetRecordView/SetRecordView"
+import {
+  isValidSetPrimaryNameView,
+  SetPrimaryNameView,
+} from "../SetPrimaryNameView/SetPrimaryNameView"
+import {
+  isValidSetRecordView,
+  SetRecordView,
+} from "../SetRecordView/SetRecordView"
+import {
+  filterUnneededWarning,
+  isValidSyncTimeWarningView,
+  SyncTimeWarningView,
+} from "../SyncTimeWarning/SyncTimeWarning"
 
 export interface SelectNameView extends ViewBase {
   name: "select-name"
@@ -37,7 +48,7 @@ export const calculateSelectNameTransactionFlow = ({
   nameData,
   targetAddress,
   primaryNameOptionId,
-  sourceValue
+  sourceValue,
 }: SelectNameView) => {
   if (!nameData || !isAddress(targetAddress)) return []
   return [
@@ -48,15 +59,28 @@ export const calculateSelectNameTransactionFlow = ({
       targetAddress,
       primaryNameOptionId,
       sourceValue,
-    } satisfies SetPrimaryNameView).with(isValidSetPrimaryNameView, (view) => view).otherwise(() => undefined),
+    } satisfies SetPrimaryNameView)
+      .with(isValidSetPrimaryNameView, (view) => view)
+      .otherwise(() => undefined),
     match({
       name: "set-record",
       type: "transaction",
       nameData,
       targetAddress,
       primaryNameOptionId,
-    } satisfies SetRecordView).with(isValidSetRecordView, (view) => view).otherwise(() => undefined),
-  ].filter(isDefined)
+    } satisfies SetRecordView)
+      .with(isValidSetRecordView, (view) => view)
+      .otherwise(() => undefined),
+    match({
+      name: "sync-time-warning",
+      type: "info",
+      primaryNameOptionId,
+    } satisfies SyncTimeWarningView)
+      .with(isValidSyncTimeWarningView, (view) => view)
+      .otherwise(() => undefined),
+  ]
+    .filter(isDefined)
+    .filter(filterUnneededWarning)
 }
 
 export const SelectNameView = ({
@@ -77,10 +101,7 @@ export const SelectNameView = ({
   const [debouncedValue, _setDebouncedValue] = useState(nameData?.name || "")
   const setDebouncedValue = useDebouncedCallback(_setDebouncedValue, 500)
 
-  const {
-    data: searchedNameData,
-    isFetching,
-  } = useNameData({
+  const { data: searchedNameData, isFetching } = useNameData({
     name: debouncedValue,
     enabled: debouncedValue === value && debouncedValue.length > 3,
   })

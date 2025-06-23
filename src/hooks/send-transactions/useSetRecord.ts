@@ -11,6 +11,7 @@ import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { NameData } from "../useNameData"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
+import { useQueryClient } from "@tanstack/react-query"
 
 export const useSetRecord = ({
   nameData,
@@ -38,6 +39,7 @@ export const useSetRecord = ({
     })
 
   const config = useConfig()
+  const queryClient = useQueryClient()
 
   const {
     data: preparedRequest,
@@ -52,6 +54,9 @@ export const useSetRecord = ({
       functionName: "setAddr",
       args: [namehash(nameData.name), BigInt(coinType), targetAddress],
     }),
+    query: {
+      enabled: isAddressAndChainValid,
+    }
   })
 
   const position = getCurrentViewPosition()
@@ -72,6 +77,7 @@ export const useSetRecord = ({
             hash: data,
           },
           config,
+          queryClient,
         })
       },
     },

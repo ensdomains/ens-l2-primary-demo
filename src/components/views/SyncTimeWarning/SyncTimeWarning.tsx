@@ -7,7 +7,7 @@ import { P } from "ts-pattern"
 
 export interface SyncTimeWarningView extends ViewBase {
   name: "sync-time-warning"
-  type: "transaction"
+  type: "info"
   primaryNameOptionId: number
 }
 
@@ -17,7 +17,7 @@ export const isSyncTimeWarning = (view: unknown): view is SyncTimeWarningView =>
 export const isValidSyncTimeWarningView = P.intersection(
   {
     name: "sync-time-warning",
-    type: "transaction",
+    type: "warning",
     primaryNameOptionId: isValidPrimaryNameOptionId,
   },
   P.when(
@@ -25,6 +25,11 @@ export const isValidSyncTimeWarningView = P.intersection(
     isSyncTimeWarning(view) &&
     primaryNameOptions.find((option) => option.id === view.primaryNameOptionId)?.chain.chainType === 'l2',
 ))
+
+export const filterUnneededWarning = (view: ViewBase, _: number  , array: ViewBase[]) => {
+  if (view.name !== "sync-time-warning") return true
+  return array.findIndex((v) => v.name === "set-primary-name") >= 0 
+}
 
 export const SyncTimeWarning = ({
   primaryNameOption,
