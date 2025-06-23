@@ -39,7 +39,7 @@ export const DeletePrimaryNameView = ({
   const { status, execute, error, reset } = useSetPrimaryName({
     targetAddress,
     primaryNameOption,
-    nameData,
+    nameData: null,
   })
 
   console.log("useSetPrimaryName", { status, error })

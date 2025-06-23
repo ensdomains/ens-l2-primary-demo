@@ -18,7 +18,7 @@ export const useSetPrimaryName = ({
   targetAddress,
   primaryNameOption,
 }: {
-  nameData: NameData
+  nameData: NameData | null
   targetAddress: Address
   primaryNameOption: PrimaryOption
 }) => {
@@ -45,7 +45,7 @@ export const useSetPrimaryName = ({
     chainId: primaryNameOption.chain.id,
     data: encodeFunctionData({
       abi: reverseRegistrarSetNameSnippet,
-      args: [nameData.name],
+      args: [nameData?.name ?? ""],
     }),
     query: {
       enabled: isAddressAndChainValid,

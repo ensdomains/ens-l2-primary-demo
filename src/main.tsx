@@ -11,11 +11,10 @@ import { wagmiConfig } from "./wagmi.ts"
 import { ThemeProvider } from "@ensdomains/thorin"
 import "@ensdomains/thorin/dist/thorin.css"
 import "@rainbow-me/rainbowkit/styles.css"
-import "./index.css"
 import "./index2.css"
 import { Layout } from "./components/layouts/Layout/Layout.tsx"
 import { IdentifierPage } from "./components/pages/IdentifierPage.tsx"
-import { SplashPage } from "./components/pages/SplashPage.tsx"
+import { SplashPage } from "./components/pages/SplashPage/SplashPage.tsx"
 
 globalThis.Buffer = Buffer
 
@@ -27,14 +26,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <ThemeProvider defaultMode='light'>
-            <Layout>
-              <BrowserRouter>
+            <BrowserRouter>
+              <Layout>
                 <Routes>
                   <Route path='/' element={<SplashPage />} />
                   <Route path='/:identifier' element={<IdentifierPage />} />
                 </Routes>
-                </BrowserRouter>
               </Layout>
+            </BrowserRouter>
           </ThemeProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

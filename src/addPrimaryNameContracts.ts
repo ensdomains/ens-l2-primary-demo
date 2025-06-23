@@ -18,34 +18,33 @@ import {
 const contractAddresses: Record<number, Record<string, Address>> = {
   [mainnet.id]: {},
   [sepolia.id]: {
-    ensDefaultReverseRegistrar: "0x089C3F89e6eE8bAc40aFA96267a1c84003109d1b",
+    ensDefaultReverseRegistrar: "0x4F382928805ba0e23B30cFB75fC9E848e82DFD47",
     ensReverseRegistrar: "0xA0a1AbcDAe1a2a4A2EF8e9113Ff0e02DD81DC0C6",
-    // ensUniversalResolver: "0xC087fF4e7D743c3ae6673FF5d42391b741369169",
-    ensUniversalResolver: "0xb7b7dadf4d42a08b3ec1d3a1079959dfbc8cffcc",
+    ensUniversalResolver:"0xb7B7DAdF4D42a08B3eC1d3A1079959Dfbc8CFfCC",
   },
   [optimism.id]: {},
   [optimismSepolia.id]: {
-    l1ReverseResolver: "0xD8af9130D2A770B53A20EEbC40377D097f3EFc19",
+    l1ReverseResolver: "0xc9Ae189772BD48e01410AB3Be933637ee9D3AA5f",
     l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
   },
   [arbitrum.id]: {},
   [arbitrumSepolia.id]: {
-    l1ReverseResolver: "0x5Fec74B711EdE9828eddfb7A0370BD28D075fdeF",
+    l1ReverseResolver: "0x926f94D2aDC77C86Cb0050892097D49AADd02e8B",
     l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
   },
   [base.id]: {},
   [baseSepolia.id]: {
-    l1ReverseResolver: "0x490F21cA7294Db7489b98A251D029E83a17A7262",
+    l1ReverseResolver: "0xaF3b3f636bE80b6709F5Bd3A374d6ac0D0a7c7aA",
     l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
   },
   [linea.id]: {},
   [lineaSepolia.id]: {
-    l1ReverseResolver: "0x65Fd0B7576027fDF1EE49dA5099D9bCb305710e5",
+    l1ReverseResolver: "0x083dA1Dbc0F379ccda6AC81A934207c3D8a8a205",
     l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
   },
   [scroll.id]: {},
   [scrollSepolia.id]: {
-    l1ReverseResolver: "0xDf756B18878da8229e4e741A467b4432dde0601A",
+    l1ReverseResolver: "0x9Fa59673e43F15bDB8722Fdaf5C2107574B99062",
     l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
   },
 } as const

@@ -6,5 +6,6 @@ globalStyle(':root', {
       margin: '0 auto',
       maxWidth: '620px',
       padding: commonVars.space['4'],
+      fontFamily: commonVars.fonts.sans
     }
 );

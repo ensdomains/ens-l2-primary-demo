@@ -249,7 +249,7 @@ export const OptionSupportedChains = ({
       .map((coin) => chains.find((chain) => chain.coinType === coin.coinType))
       .filter((chain) => !!chain) || []
   return match(supportedChains.length)
-    .with(0, () => <div>No supported chains</div>)
+    .with(0, () => null)
     .otherwise(() => (
       <div className={supportedChainsContainer}>
         {supportedChains.map((chain) => (
