@@ -13,8 +13,8 @@ import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Typography } from "@ensdomains/thorin"
-import { match } from "ts-pattern"
 import { Address } from "viem"
+import { calculatePrimaryNameStatus } from "@/utils/calculatePrimaryNameStatus"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -59,28 +59,15 @@ export const NameCentricPrimaryNameOption = ({
     coinType: option.chain.coinType,
   })
 
-  const status: PrimaryNameOptionStatus = match({
+  const status: PrimaryNameOptionStatus = calculatePrimaryNameStatus({
     isLoading: isNameDataLoading || isSourceLoading || isResolvedLoading,
     isFetching: isNameDataFetching || isSourceFetching || isResolvedFetching,
     isConfirming: isFlowConfirming(transactionKey(name, option)),
     isResolved: !!resolvedValue,
     isSourced: !!sourceValue,
+    isMatching: resolvedValue === sourceValue,
     isRecordSet: !!address && address !== EMPTY_ADDRESS,
   })
-    .with({ isLoading: true }, () => "loading" as const)
-    .with({ isFetching: true }, () => "fetching" as const)
-    .with({ isResolved: true, isSourced: true }, () => "active" as const)
-    .with({ isResolved: true, isSourced: false }, () => "inherited" as const)
-    .with(
-      { isResolved: false, isSourced: true, isRecordSet: true },
-      () => "syncing" as const,
-    )
-    .with(
-      { isResolved: false, isSourced: true, isRecordSet: false },
-      () => "incomplete" as const,
-    )
-    .with({ isResolved: false, isSourced: false }, () => "none-set" as const)
-    .exhaustive()
 
   return (
     <>

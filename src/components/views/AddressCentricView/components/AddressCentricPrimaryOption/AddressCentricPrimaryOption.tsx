@@ -1,7 +1,6 @@
 import {
   OptionAction,
   OptionNameRecordItem,
-  PrimaryNameOptionStatus,
 } from "@/components/molecules/PrimaryNameOption/PrimaryNameOption"
 import { OptionDescription } from "@/components/molecules/PrimaryNameOption/PrimaryNameOption"
 import { OptionTitle } from "@/components/molecules/PrimaryNameOption/PrimaryNameOption"
@@ -12,8 +11,8 @@ import { useResolvedPrimaryName } from "@/hooks/useResolvedPrimaryName"
 import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { Typography } from "@ensdomains/thorin"
-import { match } from "ts-pattern"
 import { Address } from "viem"
+import { calculatePrimaryNameStatus } from "@/utils/calculatePrimaryNameStatus"
 
 export const transactionKey = (address: Address, option: PrimaryOption) =>
   `address:${address}::option:${option.id}`
@@ -25,7 +24,7 @@ export const AddressCentricPrimaryOption = ({
   address: Address
   option: PrimaryOption
 }) => {
-  const { transactions, createTransactionFlow } = useTransactionStore()
+  const { isFlowConfirming, createTransactionFlow } = useTransactionStore()
 
   const {
     data: resolvedValue,
@@ -53,51 +52,18 @@ export const AddressCentricPrimaryOption = ({
     name: sourceValue || resolvedValue || undefined,
   })
 
-  const status: PrimaryNameOptionStatus = match({
+  const status = calculatePrimaryNameStatus({
     isLoading: isResolvedLoading || isSourceLoading || isNameDataLoading,
     isFetching: isResolvedFetching || isSourceFetching || isNameDataFetching,
-    isConfirming:
-      transactions[transactionKey(address, option)]?.status === "sent",
+    isConfirming: isFlowConfirming(transactionKey(address, option)),
     isResolved: !!resolvedValue,
     isSourced: !!sourceValue,
+    isMatching: resolvedValue === sourceValue,
     isRecordSet:
       nameData?.coins.find((coin) => coin.coinType === option.chain.coinType)
         ?.value === address,
   })
-    .with(
-      {
-        isConfirming: true,
-      },
-      () => "confirming" as const,
-    )
-    .with(
-      {
-        isLoading: true,
-      },
-      () => "loading" as const,
-    )
-    .with(
-      {
-        isFetching: true,
-      },
-      () => "fetching" as const,
-    )
-    .with({ isResolved: true, isSourced: true }, () => "active" as const)
-    .with({ isResolved: true, isSourced: false }, () => "inherited" as const)
-    .with(
-      { isResolved: false, isSourced: true, isRecordSet: true },
-      () => "syncing" as const,
-    )
-    .with(
-      { isResolved: false, isSourced: true, isRecordSet: false },
-      () => "incomplete" as const,
-    )
-    .with({ isResolved: false, isSourced: false }, () => "none-set" as const)
-    .exhaustive()
 
-  if (option.name === "Default") {
-    console.log("transactions", status, transactions)
-  }
 
   return (
     <>
