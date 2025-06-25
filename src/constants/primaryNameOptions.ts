@@ -2,7 +2,7 @@ import { ChainWithMetaData, ethereum, l2Chains } from './chains';
 import ensIcon from '@/assets/chain-icon/ens.svg';
 import { UseSourcePrimaryNameFn } from '@/hooks/useSourcePrimaryName/useSourcePrimaryName';
 import { getPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getPrimaryName';
-import { getDefaultPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getL1PrimaryNameSource';
+import { getDefaultPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getDefaultPrimaryName';
 import { getL2PrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getL2PrimaryNameSource';
 import { Address, getChainContractAddress } from 'viem';
 

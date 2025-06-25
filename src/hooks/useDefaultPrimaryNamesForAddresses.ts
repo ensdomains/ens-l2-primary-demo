@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query"
 import { Address } from "viem"
-import { getDefaultPrimaryNameSource } from "./useSourcePrimaryName/functions/getL1PrimaryNameSource"
+import { getDefaultPrimaryNameSource } from "./useSourcePrimaryName/functions/getDefaultPrimaryName"
 import { ethereum } from "@/constants/chains"
 import { useConfig } from "wagmi"
 
