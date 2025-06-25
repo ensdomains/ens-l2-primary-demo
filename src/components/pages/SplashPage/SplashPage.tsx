@@ -17,7 +17,7 @@ export const SplashPage = () => {
           different Primary Name for all supported chains, or a default.
         </Typography>
         <div className={chainIcons}>
-          {chains.map((chain) => <img src={chain.icon} alt={chain.name} className={chainIcon} />)}
+          {chains.map((chain) => <img key={chain.name} src={chain.icon} alt={chain.name} className={chainIcon} />)}
           </div>
           <Input label="" placeholder="Search for a name or address" icon={<MagnifyingGlassSVG/>} onKeyDown={(e) => {
         if (e.key === "Enter") {

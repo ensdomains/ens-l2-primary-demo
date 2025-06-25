@@ -285,7 +285,7 @@ export const OptionAction = ({
     ))
     .with("confirming", () => (
       <Button colorStyle='accentSecondary' disabled>
-        Confirming
+        Transaction pending
       </Button>
     ))
     .with("active", () => (

@@ -70,7 +70,7 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
       primaryNameOptionId,
       coinTypes:
         coinTypes.filter((c) =>
-          nameData.coins.some(
+          !nameData.coins.some(
             (coin) => coin.coinType === c && coin.value === targetAddress,
           ),
         ) ?? [],
