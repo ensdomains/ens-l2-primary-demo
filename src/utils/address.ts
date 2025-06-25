@@ -1,11 +1,12 @@
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Address, getAddress } from "viem"
 
-export const shortenAddress = (address: Address) => {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+export const shortenAddress = (address: string = '') => {
+  const normalizedAddress = normalizeAddress(address)
+  return `${normalizedAddress.slice(0, 6)}...${normalizedAddress.slice(-4)}`
 }
 
-export const normalizeAddress = (address: Address): Address => {
+export const normalizeAddress = (address: string = ''): Address => {
   try {
     return getAddress(address)
   } catch {

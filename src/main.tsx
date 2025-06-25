@@ -15,6 +15,7 @@ import "./index2.css"
 import { Layout } from "./components/layouts/Layout/Layout.tsx"
 import { IdentifierPage } from "./components/pages/IdentifierPage.tsx"
 import { SplashPage } from "./components/pages/SplashPage/SplashPage.tsx"
+import { TransactionStoreProvider } from "./providers/TransactionStoreProvider.tsx"
 
 globalThis.Buffer = Buffer
 
@@ -26,14 +27,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <ThemeProvider defaultMode='light'>
-            <BrowserRouter>
-              <Layout>
-                <Routes>
-                  <Route path='/' element={<SplashPage />} />
-                  <Route path='/:identifier' element={<IdentifierPage />} />
-                </Routes>
-              </Layout>
-            </BrowserRouter>
+            <TransactionStoreProvider>
+              <BrowserRouter>
+                <Layout>
+                  <Routes>
+                    <Route path='/' element={<SplashPage />} />
+                    <Route path='/:identifier' element={<IdentifierPage />} />
+                  </Routes>
+                </Layout>
+              </BrowserRouter>
+            </TransactionStoreProvider>
           </ThemeProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

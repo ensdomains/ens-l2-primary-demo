@@ -1,6 +1,5 @@
 import { type Address, encodeFunctionData } from "viem"
 import {
-  useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
   // useWaitForTransactionReceipt,
@@ -11,7 +10,6 @@ import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
 import { reverseRegistrarSetNameSnippet } from "@ensdomains/ensjs/contracts"
 import { NameData } from "../useNameData"
-import { useQueryClient } from "@tanstack/react-query"
 
 export const useSetPrimaryName = ({
   nameData,
@@ -26,14 +24,10 @@ export const useSetPrimaryName = ({
 
   const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
 
-  const queryClient = useQueryClient()
-
   const isAddressAndChainValid = useCheckAddressAndChain({
     address: targetAddress,
     chainId: primaryNameOption?.chain.id,
   })
-
-  const config = useConfig()
 
   const {
     data: preparedRequest,
@@ -68,9 +62,7 @@ export const useSetPrimaryName = ({
           transaction: {
             status: "sent",
             hash: data,
-          },
-          config,
-          queryClient,
+          }
         })
       },
     },

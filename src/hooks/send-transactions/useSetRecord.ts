@@ -1,6 +1,5 @@
 import { type Address, encodeFunctionData, namehash } from "viem"
 import {
-  useConfig,
   usePrepareTransactionRequest,
   useSendTransaction,
   // useWaitForTransactionReceipt,
@@ -11,7 +10,6 @@ import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { NameData } from "../useNameData"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
-import { useQueryClient } from "@tanstack/react-query"
 
 export const useSetRecord = ({
   nameData,
@@ -37,9 +35,6 @@ export const useSetRecord = ({
       address: nameData.ownership.owner,
       chainId: ethereum.id,
     })
-
-  const config = useConfig()
-  const queryClient = useQueryClient()
 
   const {
     data: preparedRequest,
@@ -76,8 +71,6 @@ export const useSetRecord = ({
             status: "sent",
             hash: data,
           },
-          config,
-          queryClient,
         })
       },
     },

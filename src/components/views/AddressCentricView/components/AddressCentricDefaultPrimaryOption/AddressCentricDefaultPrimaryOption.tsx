@@ -26,7 +26,7 @@ export const AddressCentricDefaultPrimaryOption = ({
   address: Address
   option: PrimaryOption
 }) => {
-  const { transactions, createTransactionFlow } = useTransactionStore()
+  const { createTransactionFlow, isFlowConfirming } = useTransactionStore()
 
   const {
     data: sourceValue,
@@ -48,8 +48,7 @@ export const AddressCentricDefaultPrimaryOption = ({
   const status: PrimaryNameOptionStatus = match({
     isLoading: isSourceLoading || isNameDataLoading,
     isFetching: isSourceFetching || isNameDataFetching,
-    isConfirming:
-      transactions[transactionKey(address, option)]?.status === "sent",
+    isConfirming: isFlowConfirming(transactionKey(address, option)),
     isSourced: !!sourceValue,
   })
     .with(

@@ -93,9 +93,10 @@ interface TransactionStore {
       viewIndex: number
     }
   }
-  transactions: {
-    [key: string]: Transaction
-  }
+  config: Config | null
+  queryClient: QueryClient | null
+  setConfig: (config: Config) => void
+  setQueryClient: (queryClient: QueryClient) => void
   updateView: (
     viewPosition: { key: string; viewIndex: number } | null,
     payload: Partial<Omit<View, "name" | "type">>,
@@ -109,8 +110,6 @@ interface TransactionStore {
     viewPosition: { key: string; viewIndex: number },
     payload: {
       transaction: Transaction
-      config: Config
-      queryClient: QueryClient
     },
   ) => Promise<void>
   createTransactionFlow: (
@@ -118,6 +117,7 @@ interface TransactionStore {
     payload: PartialBy<Flow, "viewIndex">,
   ) => void
   generateTransactions: () => void
+  syncAllTransactions: () => void
   increment: () => void
   decrement: () => void
   dismiss: () => void
@@ -130,6 +130,7 @@ interface TransactionStore {
     | { flow: undefined; key: undefined }
   getCurrentTransaction: () => Transaction | null
   isFlowConfirming: (key: string) => boolean
+  checkTransactionStatus: (position: {key: string, viewIndex: number}) => void
 }
 
 export const useTransactionStore = create<TransactionStore>()(
@@ -139,22 +140,23 @@ export const useTransactionStore = create<TransactionStore>()(
         transactions: {},
         flows: {},
         currentKey: null,
-        addTransaction: async (
-          { key, viewIndex },
-          { transaction, config, queryClient },
-        ) => {
-          set((state) => ({
-            ...state,
-            flows: {
-              ...state.flows,
-              [key]: {
-                ...state.flows[key],
-                views: state.flows[key].views.map((v, i) =>
-                  i === viewIndex ? { ...v, transaction } : v,
-                ),
-              },
-            },
-          }))
+        config: null,
+        queryClient: null,
+        setQueryClient: (queryClient: QueryClient) => {
+          set((state) => ({ ...state, queryClient }))
+        },
+        setConfig: (config: Config) => {
+          set((state) => ({ ...state, config }))
+        },
+        checkTransactionStatus: async ({key, viewIndex}) => {
+          const config = get().config
+          if (!config) {
+            throw new Error("Config not set in transaction store")
+          }
+          const transaction = get().flows[key].views[viewIndex].transaction
+          if (!transaction) {
+            throw new Error("Transaction not found in transaction store")
+          }
           try {
             await waitForTransactionReceipt(config, { hash: transaction.hash })
             set(
@@ -181,7 +183,7 @@ export const useTransactionStore = create<TransactionStore>()(
               false,
               "transaction-confirmed",
             )
-            queryClient.invalidateQueries()
+            get().queryClient?.invalidateQueries({ refetchType: "all" })
           } catch (error) {
             set((state) => ({
               ...state,
@@ -204,6 +206,78 @@ export const useTransactionStore = create<TransactionStore>()(
               },
             }))
           }
+        },
+        addTransaction: async (
+          { key, viewIndex },
+          { transaction },
+        ) => {
+          const config = get().config
+          if (!config) {
+            throw new Error("Config not set in transaction store")
+          }
+          
+          set((state) => ({
+            ...state,
+            flows: {
+              ...state.flows,
+              [key]: {
+                ...state.flows[key],
+                views: state.flows[key].views.map((v, i) =>
+                  i === viewIndex ? { ...v, transaction } : v,
+                ),
+              },
+            },
+          }))
+          get().checkTransactionStatus({key, viewIndex})
+          // try {
+          //   await waitForTransactionReceipt(config, { hash: transaction.hash })
+          //   set(
+          //     (state) => ({
+          //       ...state,
+          //       flows: {
+          //         ...state.flows,
+          //         [key]: {
+          //           ...state.flows[key],
+          //           views: state.flows[key].views.map((v, i) =>
+          //             i === viewIndex
+          //               ? {
+          //                   ...v,
+          //                   transaction: {
+          //                     hash: transaction.hash,
+          //                     status: "confirmed",
+          //                   },
+          //                 }
+          //               : v,
+          //           ),
+          //         },
+          //       },
+          //     }),
+          //     false,
+          //     "transaction-confirmed",
+          //   )
+          //   queryClient.invalidateQueries()
+          // } catch (error) {
+          //   set((state) => ({
+          //     ...state,
+          //     flows: {
+          //       ...state.flows,
+          //       [key]: {
+          //         ...state.flows[key],
+          //         views: state.flows[key].views.map((v, i) =>
+          //           i === viewIndex
+          //             ? {
+          //                 ...v,
+          //                 transaction: {
+          //                   hash: transaction.hash,
+          //                   status: "failed",
+          //                 },
+          //               }
+          //             : v,
+          //         ),
+          //       },
+          //     },
+          //   }))
+          // }
         },
         createTransactionFlow: (key, payload) => {
           set(
@@ -392,6 +466,15 @@ export const useTransactionStore = create<TransactionStore>()(
 
           get().appendViews(transactions)
         },
+        syncAllTransactions: () => {
+          const flows = get().flows
+          const sentTransactionPositions = Object.keys(flows).flatMap((key) => {
+            const flow = flows[key]
+            return flow.views.map((v, i) => v.transaction?.status === "sent" ? {key, viewIndex: i} : null).filter((v) => !!v)
+          })
+          console.log("sentTransactionPositions", sentTransactionPositions)
+          Promise.all(sentTransactionPositions.map(({key, viewIndex}) => get().checkTransactionStatus({key, viewIndex})))
+        },
         getCurrentTransaction: () => {
           const { view } = get().getCurrentView()
           if (!view) return null
@@ -400,11 +483,18 @@ export const useTransactionStore = create<TransactionStore>()(
         isFlowConfirming: (key: string) => {
           const flow = get().flows[key]
           if (!flow) return false
-          return flow.views.some((v) => v.transaction?.status === "sent")
+          const isConfirming = flow.views.some((v) => v.transaction?.status === "sent")
+          return isConfirming
         },
       }),
       {
         name: "transaction-store",
+        // Exclude config from persistence since it contains non-serializable data
+        partialize: (state) => ({
+          flows: state.flows,
+          currentKey: state.currentKey,
+          // config is excluded from persistence
+        }),
       },
     ),
   ),

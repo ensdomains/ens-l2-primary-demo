@@ -10,7 +10,6 @@ import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { NameData } from "../useNameData"
 import { setRecords } from "@ensdomains/ensjs/wallet"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
-import { useQueryClient } from "@tanstack/react-query"
 
 export const useSetRecords = ({
   nameData,
@@ -41,7 +40,6 @@ export const useSetRecords = ({
 
   const config = useConfig()
   const client = config.getClient({ chainId: ethereum.id })
-  const queryClient = useQueryClient()
 
   const {
     data: preparedRequest,
@@ -78,8 +76,6 @@ export const useSetRecords = ({
             status: "sent",
             hash: data,
           },
-          config,
-          queryClient,
         })
       },
     },

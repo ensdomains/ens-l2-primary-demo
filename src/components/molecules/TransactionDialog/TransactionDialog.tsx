@@ -44,7 +44,6 @@ const getPrimaryNameOption = (primaryNameOptionId: number) =>
 
 export const TransactionDialog = () => {
   const { dismiss, getCurrentView } = useTransactionStore()
-  const flow = useTransactionStore(( state) => state.currentKey ? state.flows[state.currentKey] : null)
  
   const { view } = getCurrentView()
 
