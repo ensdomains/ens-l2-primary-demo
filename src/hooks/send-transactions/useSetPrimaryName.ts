@@ -82,7 +82,6 @@ export const useSetPrimaryName = ({
   //   chainId: primaryNameOption?.chain.id,
   // })
 
-  console.log("useSetPrimaryName preparedRequest", preparedRequest)
   const execute = async () => {
     if (!preparedRequest) return
     sendTransaction(preparedRequest)

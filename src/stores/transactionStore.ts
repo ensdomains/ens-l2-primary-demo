@@ -208,12 +208,6 @@ export const useTransactionStore = create<TransactionStore>()(
         createTransactionFlow: (key, payload) => {
           set(
             (state) => {
-              console.log(
-                "createTransactionFlow",
-                { key, payload },
-                payload.viewIndex ?? 0,
-              )
-              console.log("state", state)
               const newState = {
                 ...state,
                 flows: {
@@ -225,7 +219,6 @@ export const useTransactionStore = create<TransactionStore>()(
                 },
                 currentKey: key,
               }
-              console.log("newState", newState)
               return newState
             },
             false,
@@ -331,9 +324,7 @@ export const useTransactionStore = create<TransactionStore>()(
           return { flow, key: currentKey }
         },
         getCurrentView: () => {
-          console.log("getCurrentView")
           const { flow, key } = get().getCurrentFlow()
-          console.log("getCurrentView", { flow, key })
           const failedResult = {
             view: undefined,
             key: undefined,
@@ -346,7 +337,6 @@ export const useTransactionStore = create<TransactionStore>()(
           const view = flow?.views[viewIndex]
           if (!view) return failedResult
 
-          console.log("getCurrentView", { view, key, viewIndex })
           return { view, key, viewIndex }
         },
         appendViews: (views: View[]) =>

@@ -35,11 +35,7 @@ export const isValidSetRecordView = P.intersection({
 }, P.when((view) => {
   if (!isSetRecordView(view)) return false
   const primaryOption = primaryNameOptions.find((option) => option.id === view.primaryNameOptionId)!
-  console.log("nameDataHasRecord", {
-    nameData: view.nameData,
-    coinType: primaryOption.chain.coinType,
-    value: view.targetAddress,
-  })
+
   return !nameDataHasRecord({
     nameData: view.nameData,
     coinType: primaryOption.chain.coinType,
@@ -62,7 +58,6 @@ export const SetRecordView = ({
       resolverAddress: nameData.resolverAddress,
     },
   )
-  console.log("status", status)
 
   return match(status)
     .with("loading", () => <div>Loading</div>)
@@ -114,7 +109,6 @@ export const SetRecordView = ({
           execute()
         }}
         onRetry={() => {
-          console.log("onRetry")
           reset()
         }}
         onNext={() => {

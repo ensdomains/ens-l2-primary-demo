@@ -51,7 +51,6 @@ export const NameCentricDefaultPrimaryNameOption = ({
   const defaultPrimaryNames = useDefaultPrimaryNamesForAddresses({
     addresses,
   })
-  console.log("defaultPrimaryNames", defaultPrimaryNames)
 
   const defaultPrimaryNameAddresses = defaultPrimaryNames
     .filter(({ data }) => data?.name === name)

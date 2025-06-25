@@ -48,8 +48,6 @@ export const TransactionDialog = () => {
  
   const { view } = getCurrentView()
 
-  console.log("flow", flow)
-  console.log("TransactionDialog", { view })
   return (
     <Dialog
       open={!!view}

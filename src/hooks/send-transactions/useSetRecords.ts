@@ -32,7 +32,6 @@ export const useSetRecords = ({
   } = useTransactionStore()
 
   const currentTransaction = getCurrentTransaction()
-  console.log("currentTransaction", currentTransaction)
 
   const isAddressAndChainValid =
     useCheckAddressAndChain({

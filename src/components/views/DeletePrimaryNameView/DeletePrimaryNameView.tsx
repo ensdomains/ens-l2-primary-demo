@@ -42,8 +42,6 @@ export const DeletePrimaryNameView = ({
     nameData: null,
   })
 
-  console.log("useSetPrimaryName", { status, error })
-
   return match(status)
     .with("loading", () => <div>Loading</div>)
     .with("syncAddressOrChain", () => (

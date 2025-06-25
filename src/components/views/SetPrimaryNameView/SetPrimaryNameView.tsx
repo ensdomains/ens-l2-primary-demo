@@ -62,8 +62,6 @@ export const SetPrimaryNameView = ({
     nameData,
   })
 
-  console.log("useSetPrimaryName", { status, error })
-
   return match(transaction?.status ?? status)
     .with("loading", () => <div>Loading...</div>)
     .with("syncAddressOrChain", () => {

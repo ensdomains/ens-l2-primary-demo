@@ -139,8 +139,7 @@ export const SelectNameWithChainsView = ({
               })}
               onChange={(coinType, selected) => {
                 updateView(getCurrentViewPosition(), {
-                  coinTypes: coinTypes.filter((c) => c !== coinType),
-                  ...(selected ? [coinType] : []),
+                  coinTypes: [...coinTypes.filter((c) => c !== coinType), ...(selected ? [coinType] : [])],
                 })
                 generateTransactions()
               }}

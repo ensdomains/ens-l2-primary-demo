@@ -56,7 +56,6 @@ export const SetRecordsView = ({
     targetAddress,
     resolverAddress: nameData.resolverAddress,
   })
-  console.log("status", status, error)
 
   return match(status)
     .with("loading", () => <div>Loading</div>)

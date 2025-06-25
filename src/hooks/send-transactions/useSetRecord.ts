@@ -92,18 +92,6 @@ export const useSetRecord = ({
     sendTransaction({ ...preparedRequest, to: resolverAddress })
 
   const currentTransaction = getCurrentTransaction()
-
-  console.log("useSetRecord", {
-    isLoading: false,
-    isOutOfSync: !isAddressAndChainValid,
-    isPreparing: isPrepareLoading,
-    isPrepared: !!preparedRequest,
-    isPending: isPending,
-    isSent: currentTransaction?.status === "sent",
-    isConfirmed: currentTransaction?.status === "confirmed",
-    isError:
-      currentTransaction?.status === "failed" || !!prepareError || !!sendError,
-  })
   
   const status = calculateTransactionStatus({
     isLoading: false,

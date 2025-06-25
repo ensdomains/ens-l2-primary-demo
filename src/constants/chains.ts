@@ -75,5 +75,3 @@ export const chains = [
   ethereum,
   ...l2Chains,
 ] as const
-
-console.log(chains)
