@@ -14,10 +14,10 @@ import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Typography } from "@ensdomains/thorin"
 import { match } from "ts-pattern"
 import { useDefaultPrimaryNamesForAddresses } from "@/hooks/useDefaultPrimaryNamesForAddresses"
-import { isDefined } from "@/utils/predicates"
 import { Divider } from "@/components/atoms/Divider/Divider"
 import { isLastIndex } from "@/utils/array"
 import { Fragment } from "react"
+import { Address } from "viem"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -48,52 +48,57 @@ export const NameCentricDefaultPrimaryNameOption = ({
           address !== EMPTY_ADDRESS && self.indexOf(address) === index,
       ) || []
 
-  const defaultPrimaryNames = useDefaultPrimaryNamesForAddresses({
+  const defaultPrimaryNameAndAddressData = useDefaultPrimaryNamesForAddresses({
     addresses,
   })
 
-  const defaultPrimaryNameAddresses = defaultPrimaryNames
-    .filter(({ data }) => data?.name === name)
-    .map(({ data }) => data?.address)
-    .filter((address) => !!address)
-  const isDefaultPrimaryNameAddressesLoading = defaultPrimaryNames.some(
-    ({ isLoading }) => isLoading,
-  )
-  const isDefaultPrimaryNameAddressesFetching = defaultPrimaryNames.some(
-    ({ isFetching }) => isFetching,
-  )
+  const definedDefaultPrimaryNameAndAddressData =
+    defaultPrimaryNameAndAddressData
+      .map(({ data }) => data)
+      .filter((data): data is { name: string; address: Address } => !!data)
+
+  const isDefaultPrimaryNameAddressesLoading =
+    defaultPrimaryNameAndAddressData.some(({ isLoading }) => isLoading)
+  const isDefaultPrimaryNameAddressesFetching =
+    defaultPrimaryNameAndAddressData.some(({ isFetching }) => isFetching)
 
   const status: PrimaryNameOptionStatus | "" = match({
     isLoading: isNameDataLoading || isDefaultPrimaryNameAddressesLoading,
     isFetching: isNameDataFetching || isDefaultPrimaryNameAddressesFetching,
     isConfirming: isFlowConfirming(transactionKey(name, option)),
-    count: defaultPrimaryNameAddresses.length,
+    count: definedDefaultPrimaryNameAndAddressData.length,
   })
     .with({ isConfirming: true }, () => "confirming" as const)
     .with({ isLoading: true }, () => "loading" as const)
     .with({ isFetching: true }, () => "fetching" as const)
     .otherwise(() => "active" as const)
 
+  const addressOptions = match(definedDefaultPrimaryNameAndAddressData.length)
+    .with(0, () => [{ address: EMPTY_ADDRESS as Address, status: "none-set" as const }])
+    .otherwise(() =>
+      definedDefaultPrimaryNameAndAddressData.map((data) => ({
+        address: data.address,
+        status: data.name === name ? ("active" as const) : ("incomplete" as const),
+      })),
+    )
+
   return (
     <>
       <OptionTitle option={option} />
       <OptionDescription option={option} />
-      {defaultPrimaryNames.map(({data}, index, array) => {
-        const address = data?.address
+      {addressOptions.map(({ address, status }, index, array) => {
         if (!address) return null
-        const defaultName = data?.name
-        const optionStatus = defaultName === name ? "active" : "incomplete"
         return (
           <Fragment key={address}>
             <OptionContent
               label='Address'
-              status={optionStatus}
-              incompleteMsg='To use this as your Primary Name you must update the address record'
+              status={status}
+              incompleteMsg={`This address has not set ${name} as it's default primary name`}
               syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
             >
               <OptionAddressRecordItem
                 value={address}
-                status={optionStatus}
+                status={status}
                 onDelete={() => {
                   if (!address || !nameData) return
                   createTransactionFlow(transactionKey(name, option), {
@@ -117,9 +122,9 @@ export const NameCentricDefaultPrimaryNameOption = ({
       })}
       {import.meta.env.DEV && (
         <div>
-          {defaultPrimaryNameAddresses.map((addr) => (
-            <Typography fontVariant='extraSmall' key={addr}>
-              sourceValue: {addr}
+          {definedDefaultPrimaryNameAndAddressData.map(({ name, address }) => (
+            <Typography fontVariant='extraSmall' key={address}>
+              sourceValue: {name} : {address}
             </Typography>
           ))}
           {nameData?.coins.map((coin) => (
@@ -138,12 +143,11 @@ export const NameCentricDefaultPrimaryNameOption = ({
               {
                 name: "select-address-with-chains",
                 type: "input",
-                addressData: defaultPrimaryNames
-                  .map(({ data }) => data)
-                  .filter(isDefined),
+                addressData: definedDefaultPrimaryNameAndAddressData,
                 nameData: nameData,
                 primaryNameOptionId: option.id,
-                targetAddress: defaultPrimaryNames?.[0]?.data?.address ?? "",
+                targetAddress:
+                  definedDefaultPrimaryNameAndAddressData?.[0]?.address ?? "",
                 coinTypes: [],
               },
             ],

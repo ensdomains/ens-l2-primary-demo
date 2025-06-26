@@ -138,7 +138,7 @@ export const OptionAddressRecordItem = ({
 }) => {
   const { copy, copied } = useCopied()
   return match(status)
-    .with(P.union("none-set", "incomplete", "syncing"), () => (
+    .with(P.union("none-set", "syncing"), () => (
       <div className={noneSet}>
         <Typography fontVariant='body' color='textSecondary'>
           None set
@@ -170,7 +170,7 @@ export const OptionAddressRecordItem = ({
             <CopySVG className={recordItemIcon} />
           )}
         </div>
-        {["active", "syncing", "incomplete"].includes(status) && (
+        {["active", "syncing"].includes(status) && (
           <Button colorStyle='redSecondary' shape='square' onClick={onDelete}>
             <TrashSVG className={recordItemActionIcon} />
           </Button>
