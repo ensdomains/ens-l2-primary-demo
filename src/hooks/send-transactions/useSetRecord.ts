@@ -30,7 +30,7 @@ export const useSetRecord = ({
     updateView,
   } = useTransactionStore()
 
-  const isAddressAndChainValid =
+  const { isAddressAndChainValid, isAddressValid, isChainValid } =
     useCheckAddressAndChain({
       address: nameData.ownership.owner,
       chainId: ethereum.id,
@@ -88,7 +88,8 @@ export const useSetRecord = ({
   
   const status = calculateTransactionStatus({
     isLoading: false,
-    isOutOfSync: !isAddressAndChainValid,
+    isAddressOutOfSync: !isAddressValid,
+    isChainOutOfSync: !isChainValid,
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
     isPending: isPending,

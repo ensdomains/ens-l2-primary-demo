@@ -7,7 +7,7 @@ import { TransactionView } from "@/components/views/TransactionView/TransactionV
 import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
 import { useSetPrimaryName } from "../../../hooks/send-transactions/useSetPrimaryName"
 import { shortenAddress } from "../../../utils/address"
-import { match } from "ts-pattern"
+import { match, P } from "ts-pattern"
 import { NameData } from "@/hooks/useNameData"
 import { Address } from "viem"
 import { isValidPrimaryNameOptionId, isValidAddress, isValidNameData } from "@/utils/predicates"
@@ -44,8 +44,9 @@ export const DeletePrimaryNameView = ({
 
   return match(status)
     .with("loading", () => <div>Loading</div>)
-    .with("syncAddressOrChain", () => (
+    .with(P.union("syncAddress", "syncChain"), (_status) => (
       <SyncWalletAndNetworkView
+        status={_status}
         requiredAddress={targetAddress}
         requiredChainId={primaryNameOption.chain.id}
         title={`Delete ${primaryNameOption?.name} primary name`}

@@ -24,7 +24,7 @@ export const useSetPrimaryName = ({
 
   const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
 
-  const isAddressAndChainValid = useCheckAddressAndChain({
+  const { isAddressAndChainValid, isAddressValid, isChainValid } = useCheckAddressAndChain({
     address: targetAddress,
     chainId: primaryNameOption?.chain.id,
   })
@@ -82,7 +82,8 @@ export const useSetPrimaryName = ({
   const currentTransaction = getCurrentTransaction()
   const status = calculateTransactionStatus({
     isLoading: false,
-    isOutOfSync: !isAddressAndChainValid,
+    isAddressOutOfSync: !isAddressValid,
+    isChainOutOfSync: !isChainValid,
     isPreparing: isPrepareLoading,
     isPrepared: !!preparedRequest,
     isPending: isPending,

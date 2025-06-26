@@ -59,8 +59,9 @@ export const SetRecordsView = ({
 
   return match(status)
     .with("loading", () => <div>Loading</div>)
-    .with("syncAddressOrChain", () => (
+    .with(P.union("syncAddress", "syncChain"), (_status) => (
       <SyncWalletAndNetworkView
+        status={_status}
         requiredAddress={nameData.ownership.owner}
         requiredChainId={primaryNameOption.chain.id}
         title={`Update ${primaryNameOption?.name} address`}

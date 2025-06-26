@@ -2,7 +2,8 @@ import { match } from "ts-pattern"
 
 export const calculateTransactionStatus = ({
   isLoading,
-  isOutOfSync,
+  isAddressOutOfSync,
+  isChainOutOfSync,
   isPreparing,
   isPrepared,
   isPending,
@@ -11,7 +12,8 @@ export const calculateTransactionStatus = ({
   isError
 }: {
   isLoading: boolean
-  isOutOfSync: boolean
+  isAddressOutOfSync: boolean
+  isChainOutOfSync: boolean
   isPreparing: boolean
   isPrepared: boolean
   isPending: boolean
@@ -21,7 +23,8 @@ export const calculateTransactionStatus = ({
 }) =>
   match({
     isLoading,
-    isOutOfSync,
+    isAddressOutOfSync,
+    isChainOutOfSync,
     isPreparing,
     isPrepared,
     isPending,
@@ -30,7 +33,8 @@ export const calculateTransactionStatus = ({
     isError,
   })
     .with({ isLoading: true }, () => "loading" as const)
-    .with({ isOutOfSync: true }, () => "syncAddressOrChain" as const)
+    .with({ isAddressOutOfSync: true }, () => "syncAddress" as const)
+    .with({ isChainOutOfSync: true }, () => "syncChain" as const)
     .with({ isError: true }, () => "failed" as const)
     .with({ isConfirmed: true }, () => "confirmed" as const)
     .with({ isSent: true }, () => "sent" as const)

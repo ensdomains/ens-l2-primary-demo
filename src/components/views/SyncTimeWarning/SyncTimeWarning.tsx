@@ -17,7 +17,7 @@ export const isSyncTimeWarning = (view: unknown): view is SyncTimeWarningView =>
 export const isValidSyncTimeWarningView = P.intersection(
   {
     name: "sync-time-warning",
-    type: "warning",
+    type: "info",
     primaryNameOptionId: isValidPrimaryNameOptionId,
   },
   P.when(

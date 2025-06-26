@@ -6,13 +6,13 @@ import { Address } from "viem"
 import { useConfig } from "wagmi"
 import { disconnect } from "wagmi/actions"
 import { ChangeAddressView } from "./views/ChangeAddressView/ChangeAddressView"
-import { match, P } from "ts-pattern"
+import { match } from "ts-pattern"
 import { useEffect, useState } from "react"
 import { ChangeChainView } from "./views/ChangeChainView/ChangeChainView"
-import { useAccountWithChainSwitch } from "@/hooks/useAccountWithChainSwitch"
 import { chains } from "@/constants/chains"
 
 export const SyncWalletAndNetworkView = ({
+  status,
   title,
   subtitle,
   subtitle2,
@@ -20,6 +20,7 @@ export const SyncWalletAndNetworkView = ({
   requiredAddress,
   requiredChainId,
 }: {
+  status: "syncAddress" | "syncChain"
   requiredAddress: Address
   requiredChainId: number
   title: string
@@ -28,37 +29,12 @@ export const SyncWalletAndNetworkView = ({
   helperText: React.ReactNode
   onBack?: () => void
 }) => {
-  const { address, chainId, hasSwitchedChain } = useAccountWithChainSwitch({
-    requiredAddress,
-    requiredChainId,
-  })
   const config = useConfig()
   const { decrement } = useTransactionStore()
   const { openConnectModal } = useConnectModal()
 
   const network =
     chains.find((chain) => chain.id === requiredChainId)?.name || "unknown"
-
-  const status = match({
-    isAddressMatching: address === requiredAddress,
-    isChainMatching: chainId === requiredChainId,
-    hasSwitchedChain,
-  })
-    .with(
-      {
-        isChainMatching: true,
-        isAddressMatching: true,
-        hasSwitchedChain: P._,
-      },
-      () => "inSync" as const,
-    )
-    .with(
-      { isAddressMatching: false },
-      { isChainMatching: false, hasSwitchedChain: false },
-      () => "addressMismatch" as const,
-    )
-    .with({ isChainMatching: false }, () => "chainMismatch" as const)
-    .exhaustive()
 
   // This structure is needed because openConnectModal is not available
   // until after rerender.
@@ -76,33 +52,29 @@ export const SyncWalletAndNetworkView = ({
     <>
       <Dialog.Heading
         title={match(status)
-          .with("addressMismatch", () => title)
-          .with("chainMismatch", () => `Cannot connect to ${network}`)
-          .with("inSync", () => '')
+          .with("syncAddress", () => title)
+          .with("syncChain", () => `Cannot connect to ${network}`)
           .exhaustive()}
-        alert={status === "chainMismatch" ? "warning" : undefined}
+        alert={status === "syncChain" ? "warning" : undefined}
       />
       <Dialog.Content>
         {match(status)
-          .with("addressMismatch", () => (
+          .with("syncAddress", () => (
             <ChangeAddressView
               subtitle={subtitle}
               subtitle2={subtitle2}
               helperText={helperText}
             />
           ))
-          .with("chainMismatch", () => (
+          .with("syncChain", () => (
             <ChangeChainView
               requiredChainId={requiredChainId}
               requiredAddress={requiredAddress}
             />
           ))
-          .with("inSync", () => null)
           .exhaustive()}
         {import.meta.env.DEV && (
           <div>
-            <Typography fontVariant='extraSmall'>address: {address}</Typography>
-            <Typography fontVariant='extraSmall'>chainId: {chainId}</Typography>
             <Typography fontVariant='extraSmall'>
               requiredAddress: {requiredAddress}
             </Typography>

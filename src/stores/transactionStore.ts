@@ -472,7 +472,6 @@ export const useTransactionStore = create<TransactionStore>()(
             const flow = flows[key]
             return flow.views.map((v, i) => v.transaction?.status === "sent" ? {key, viewIndex: i} : null).filter((v) => !!v)
           })
-          console.log("sentTransactionPositions", sentTransactionPositions)
           Promise.all(sentTransactionPositions.map(({key, viewIndex}) => get().checkTransactionStatus({key, viewIndex})))
         },
         getCurrentTransaction: () => {

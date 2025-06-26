@@ -1,5 +1,5 @@
-import { useAccount } from "wagmi"
 import { Address } from "viem";
+import { useAccountWithSafeSwitchChain } from "./useAccountWithSafeSwitchChain";
 
 export const useCheckAddressAndChain = ({
   address: requiredAddress,
@@ -9,7 +9,11 @@ export const useCheckAddressAndChain = ({
   chainId: number
 }) => {
 
-  const { address,  chainId: currentChainId } = useAccount()
+  const { address,  chainId } = useAccountWithSafeSwitchChain({ requiredAddress, requiredChainId })
 
-  return address === requiredAddress && currentChainId === requiredChainId
+  return {
+    isAddressAndChainValid: address === requiredAddress && chainId === requiredChainId,
+    isAddressValid: address === requiredAddress,
+    isChainValid: chainId === requiredChainId,
+  }
 }

@@ -64,9 +64,10 @@ export const SetPrimaryNameView = ({
 
   return match(transaction?.status ?? status)
     .with("loading", () => <div>Loading...</div>)
-    .with("syncAddressOrChain", () => {
+    .with(P.union("syncAddress", "syncChain"), (status) => {
       return (
         <SyncWalletAndNetworkView
+          status={status}
           requiredAddress={targetAddress}
           requiredChainId={primaryNameOption.chain.id}
           title={`Set ${primaryNameOption?.name} primary name`}
