@@ -1,0 +1,1 @@
+export const isLastIndex = (index: number, array: unknown[]) => index === array.length - 1

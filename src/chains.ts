@@ -70,6 +70,12 @@ export const sepolia = {
       // this is actually the default reverse resolver but just for convenience
       address: "0x089C3F89e6eE8bAc40aFA96267a1c84003109d1b",
     },
+    ensNameWrapper: {
+      address: "0x0635513f179D50A207757E05759CbD106d7dFcE8",
+    },
+    ensBaseRegistrarImplementation: {
+      address: "0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
+    },
   },
   rpc: {
     url: "https://rpc.ankr.com/eth_sepolia/",
@@ -135,7 +141,7 @@ export const optimismSepolia = {
 export const arbitrumSepolia = {
   ...arbitrumSepoliaViem,
   sourceId: sepolia.id,
-  contracts: {
+  contracts: { 
     ...arbitrumSepoliaViem.contracts,
     l1ReverseResolver: {
       address: "0x5Fec74B711EdE9828eddfb7A0370BD28D075fdeF",
