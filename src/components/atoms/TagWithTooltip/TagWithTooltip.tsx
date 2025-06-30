@@ -1,5 +1,6 @@
-import { Tooltip, Typography } from "@ensdomains/thorin"
+import { Typography } from "@ensdomains/thorin"
 import { TagWithIcon, TagWithIconProps } from "../TagWithIcon/TagWithIcon"
+import { Tooltip } from "../Tooltip/Tooltip"
 
 type TagWithTooltipProps = TagWithIconProps & {
   content: string
@@ -13,10 +14,6 @@ export const TagWithTooltip = ({ content, ...props }: TagWithTooltipProps) => {
           {content}
         </Typography>
       }
-      mobilePlacement='top'
-      placement='top'
-      width={200}
-      mobileWidth={200}
     >
       <div>
         <TagWithIcon {...props}/>

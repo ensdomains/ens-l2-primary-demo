@@ -6,7 +6,6 @@ export const tagWithIcon = style({
   alignItems: 'center',
   gap: '4px',
   position: 'relative',
-  cursor: 'pointer',
 })
 
 export const tagWithIconIcon = style({
