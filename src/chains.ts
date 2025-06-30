@@ -37,6 +37,7 @@ const apiKeys = {
   ankr: "cc4f51973be04739743bf347bbafe81389e6aef743379bb6d9eb39cac4d4ba48",
   infura: "fb056f5f6e304fd59aa054196f601d3a",
   drpc: "AjKib_55JEmzihaZhIxhyNb_ffsW8IMR7oQ98qIilXTF",
+  // drpc: "AnmpasF2C0JBqeAEzxVO8aTteiMlrW4R75hpDonbV6cR",
 };
 
 export const constructTransport = (details: ChainRpcDetails) => {

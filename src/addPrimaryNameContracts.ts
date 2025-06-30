@@ -49,13 +49,36 @@ const contractAddresses: Record<number, Record<string, Address>> = {
   },
 } as const
 
-export type ChainWithCoinType = Chain & {
-  coinType: number
+const apiKeys = {
+  drpc: "AnmpasF2C0JBqeAEzxVO8aTteiMlrW4R75hpDonbV6cR",
 }
 
-export const addPrimaryNameContractsAndCoinType = (chain: Chain): ChainWithCoinType => {
+const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${apiKeys.drpc}`
+
+const rpcDict: Record<number, string[]> = {
+  [mainnet.id]: [drpcUrl('mainnet')],
+  [sepolia.id]: [drpcUrl('sepolia'), 'https://sepolia.drpc.org'],
+  [optimism.id]: [drpcUrl('optimism')],
+  [optimismSepolia.id]: [drpcUrl('optimism-sepolia'), 'https://sepolia.optimism.io'],
+  [arbitrum.id]: [drpcUrl('arbitrum')],
+  [arbitrumSepolia.id]: [drpcUrl('arbitrum-sepolia'), 'https://sepolia-rollup.arbitrum.io/rpc'],
+  [base.id]: [drpcUrl('base')],
+  [baseSepolia.id]: [drpcUrl('base-sepolia'), 'https://sepolia.base.org'],
+  [linea.id]: [drpcUrl('linea')],
+  [lineaSepolia.id]: [drpcUrl('linea-sepolia'), 'https://rpc.sepolia.linea.build'],
+  [scroll.id]: [drpcUrl('scroll')],
+  [scrollSepolia.id]: [drpcUrl('scroll-sepolia'), 'https://sepolia-rpc.scroll.io'],
+}
+
+export type ChainWithChainData = Chain & {
+  coinType: number
+  rpcs: string[]
+}
+
+export const addPrimaryNameContractsAndChainData = (chain: Chain): ChainWithChainData => {
   const contractsAddresses = contractAddresses[chain.id] || {}
   const contracts = Object.fromEntries(Object.entries(contractsAddresses).map(([key, value]) => [key, { address: value }]))
+  const rpcs = rpcDict[chain.id] || []
   return {
     ...chain,
     // This is neccessary since our reverse contracts treat l1 testnets as mainnet clones
@@ -64,5 +87,6 @@ export const addPrimaryNameContractsAndCoinType = (chain: Chain): ChainWithCoinT
       ...chain.contracts,
      ...contracts
     },
+    rpcs,
   };
 };

@@ -1,28 +1,18 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import {
-  arbitrumSepolia,
-  baseSepolia,
-  constructTransport,
-  lineaSepolia,
-  optimismSepolia,
-  scrollSepolia,
-  sepolia,
-} from "./chains";
 
 import { chains } from "./constants/chains";
+import { fallback, http } from "viem";
 
 export const config_ = getDefaultConfig({
   appName: "ENS L2 Primary Demo",
   projectId: import.meta.env.VITE_WC_PROJECT_ID,
   chains,
-  transports: {
-    [sepolia.id]: constructTransport(sepolia.rpc),
-    [baseSepolia.id]: constructTransport(baseSepolia.rpc),
-    [optimismSepolia.id]: constructTransport(optimismSepolia.rpc),
-    [arbitrumSepolia.id]: constructTransport(arbitrumSepolia.rpc),
-    [scrollSepolia.id]: constructTransport(scrollSepolia.rpc),
-    [lineaSepolia.id]: constructTransport(lineaSepolia.rpc),
-  },
+  transports: chains.reduce((transports, chain) => {
+    return {
+      ...transports,
+      [chain.id]: fallback(chain.rpcs.map((rpc) => http(rpc)))
+    }
+  }, {})
 });
 
 export type SupportedChain = (typeof config_.chains)[number];

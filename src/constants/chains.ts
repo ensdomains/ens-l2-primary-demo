@@ -20,44 +20,44 @@ import ethereumIcon from "@/assets/chain-icon/ethereum.svg";
 import lineaIcon from "@/assets/chain-icon/linea.svg";
 import optimismIcon from "@/assets/chain-icon/optimism.svg";
 import scrollIcon from "@/assets/chain-icon/scroll.svg";
-import { addPrimaryNameContractsAndCoinType, ChainWithCoinType } from "@/addPrimaryNameContracts";
+import { addPrimaryNameContractsAndChainData, ChainWithChainData } from "@/addPrimaryNameContracts";
 
 const isTestnet = import.meta.env.DEV || import.meta.env.VITE_ENV === 'dev'
 
-export type ChainWithMetaData = ChainWithCoinType & {
+export type ChainWithMetaData = ChainWithChainData & {
   icon: string
   syncTime: string
   chainType: 'l1' | 'l2'
 }
 
-export const ethereum: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(addEnsContracts(isTestnet ? sepoliaViem : mainnetViem)), 
+export const ethereum: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(addEnsContracts(isTestnet ? sepoliaViem : mainnetViem)), 
   icon: ethereumIcon,
   syncTime: '1 block',
   chainType: 'l1'
 }
-export const base: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(isTestnet ? baseSepoliaViem : baseViem),
+export const base: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? baseSepoliaViem : baseViem),
   icon: baseIcon,
   syncTime: '6 hr',
   chainType: 'l2'
 }
 
-export const arbitrum: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(isTestnet ? arbitrumSepoliaViem : arbitrumViem),
+export const arbitrum: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? arbitrumSepoliaViem : arbitrumViem),
   icon: arbitrumIcon,
   syncTime: '6 hr',
   chainType: 'l2'
 }
-export const optimism: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(isTestnet ? optimismSepoliaViem : optimismViem),
+export const optimism: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? optimismSepoliaViem : optimismViem),
   icon: optimismIcon,
   syncTime: '6 hr',
   chainType: 'l2'
 }
-export const linea: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(isTestnet ? lineaSepoliaViem : lineaViem),
+export const linea: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? lineaSepoliaViem : lineaViem),
   icon: lineaIcon,
   syncTime: '8 - 24hr',
   chainType: 'l2'
 }
 
-export const scroll: ChainWithMetaData = { ...addPrimaryNameContractsAndCoinType(isTestnet ? scrollSepoliaViem : scrollViem),
+export const scroll: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? scrollSepoliaViem : scrollViem),
   icon: scrollIcon,
   syncTime: '1 hr',
   chainType: 'l2'
