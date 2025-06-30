@@ -1,16 +1,14 @@
 import { Button, ExitSVG, Profile } from "@ensdomains/thorin"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
-import { disconnect } from "wagmi/actions"
 import { useAccount, useEnsAvatar } from "wagmi"
 import { chains, ethereum } from "@/constants/chains"
-import { useConfig } from "wagmi"
+import { useDisconnect } from "@/hooks/useDisconnect"
 import { useResolvedPrimaryName } from "@/hooks/useResolvedPrimaryName"
 import { useZorb } from "@/hooks/useZorb/useZorb"
 
 export const WalletConnectButton = () => {
   const { address, chainId } = useAccount()
-  const config = useConfig()
-
+  const { disconnect } = useDisconnect()
   const { data: primaryName } = useResolvedPrimaryName({
     address,
     coinType: chains.find((chain) => chain.id === chainId)?.coinType ?? 60,
@@ -33,7 +31,7 @@ export const WalletConnectButton = () => {
       icon: ExitSVG,
       color: 'redPrimary',
       onClick: () => {
-        disconnect(config)
+        disconnect()
       }
     }]}/>
   }

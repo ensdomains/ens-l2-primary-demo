@@ -16,7 +16,9 @@ export const ChangeAddressView = ({
       {subtitle && <Typography textAlign='center'>{subtitle}</Typography>}
       {subtitle2 && <Typography textAlign='center'>{subtitle2}</Typography>}
       <Helper alert='info' alignment='vertical' textAlign={"center"}>
-        {helperText}
+        <Typography>
+          {helperText}
+        </Typography>
       </Helper>
     </>
   )

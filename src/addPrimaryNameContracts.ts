@@ -50,7 +50,7 @@ const contractAddresses: Record<number, Record<string, Address>> = {
 } as const
 
 const apiKeys = {
-  drpc: "AnmpasF2C0JBqeAEzxVO8aTteiMlrW4R75hpDonbV6cR",
+  drpc: "AoaJ6fczSkL8g7Ltbdd69jU_zAXCVccR8JUErqRhf0fE",
 }
 
 const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${apiKeys.drpc}`
