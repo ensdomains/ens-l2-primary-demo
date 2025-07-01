@@ -192,15 +192,15 @@ export const OptionNameRecordItem = ({
   const { data: avatar } = useEnsAvatar({
     name: value,
   })
-  return match(status)
-    .with(P.union("none-set", "incomplete", "syncing"), () => (
+  return match({status, value})
+    .with({status: P.union("none-set", "incomplete")}, { value: P.when((v) => !v)}, () => (
       <div className={noneSet}>
         <Typography fontVariant='body' color='textSecondary'>
           None set
         </Typography>
       </div>
     ))
-    .with("loading", () => <Skeleton className={loadingItem}></Skeleton>)
+    .with({status: "loading"}, () => <Skeleton className={loadingItem}></Skeleton>)
     .otherwise(() => (
       <div className={recordItemContainer}>
         <div className={recordItemContentContainer} onClick={() => copy(value)}>
@@ -212,7 +212,7 @@ export const OptionNameRecordItem = ({
               </Typography>
               {status === "inherited" && (
                 <Typography fontVariant='extraSmall' color='textSecondary'>
-                  Inherited from Default
+                  Resolved from Default
                 </Typography>
               )}
             </div>
@@ -223,7 +223,7 @@ export const OptionNameRecordItem = ({
             <CopySVG className={recordItemIcon} />
           )}
         </div>
-        {["active", "syncing", "incomplete"].includes(status) && (
+        {["active", "incomplete"].includes(status) && (
           <Button colorStyle='redSecondary' shape='square' onClick={onDelete}>
             <TrashSVG className={recordItemActionIcon} />
           </Button>
