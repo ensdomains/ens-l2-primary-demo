@@ -1,10 +1,11 @@
 import { Button, ExitSVG, Profile } from "@ensdomains/thorin"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
-import { useAccount, useEnsAvatar } from "wagmi"
-import { chains, ethereum } from "@/constants/chains"
+import { useAccount } from "wagmi"
+import { chains } from "@/constants/chains"
 import { useDisconnect } from "@/hooks/useDisconnect"
 import { useResolvedPrimaryName } from "@/hooks/useResolvedPrimaryName"
 import { useZorb } from "@/hooks/useZorb/useZorb"
+import { useEnsAvatar } from "@/hooks/useEnsAvatar"
 
 export const WalletConnectButton = () => {
   const { address, chainId } = useAccount()
@@ -16,10 +17,6 @@ export const WalletConnectButton = () => {
 
   const { data: avatar } = useEnsAvatar({
     name: primaryName,
-    chainId: ethereum.id,
-    query: {
-      enabled: !!primaryName,
-    }
   })
 
   const zorb = useZorb(address ?? "")

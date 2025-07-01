@@ -63,8 +63,8 @@ export const NameCentricPrimaryNameOption = ({
     isLoading: isNameDataLoading || isSourceLoading || isResolvedLoading,
     isFetching: isNameDataFetching || isSourceFetching || isResolvedFetching,
     isConfirming: isFlowConfirming(transactionKey(name, option)),
-    isResolved: !!resolvedValue,
-    isSourced: !!sourceValue,
+    isResolved: !!resolvedValue && resolvedValue === name,
+    isSourced: !!sourceValue && sourceValue === name,
     isMatching: resolvedValue === sourceValue,
     isRecordSet: !!address && address !== EMPTY_ADDRESS,
   })

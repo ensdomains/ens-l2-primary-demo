@@ -49,11 +49,7 @@ const contractAddresses: Record<number, Record<string, Address>> = {
   },
 } as const
 
-const apiKeys = {
-  drpc: "AoaJ6fczSkL8g7Ltbdd69jU_zAXCVccR8JUErqRhf0fE",
-}
-
-const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${apiKeys.drpc}`
+const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${import.meta.env.VITE_DRPC_KEY}`
 
 const rpcDict: Record<number, string[]> = {
   [mainnet.id]: [drpcUrl('mainnet')],

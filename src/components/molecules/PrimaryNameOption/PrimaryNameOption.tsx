@@ -35,9 +35,9 @@ import { match } from "ts-pattern"
 import { TagWithIcon } from "@/components/atoms/TagWithIcon/TagWithIcon"
 import { P } from "ts-pattern"
 import { TagWithTooltip } from "@/components/atoms/TagWithTooltip/TagWithTooltip"
-import { useEnsAvatar } from "wagmi"
+import { useEnsAvatar } from "@/hooks/useEnsAvatar"
 import { useCopied } from "@/hooks/useCopied"
-import { chains, ethereum } from "@/constants/chains"
+import { chains } from "@/constants/chains"
 import { shortenAddress } from "@/utils/address"
 import { Address } from "viem"
 import { NameData } from "@/hooks/useNameData"
@@ -190,10 +190,6 @@ export const OptionNameRecordItem = ({
 }) => {
   const { copy, copied } = useCopied()
   const { data: avatar } = useEnsAvatar({
-    chainId: ethereum.id,
-    assetGatewayUrls: {
-      ipfs: "https://ipfs.euc.li",
-    },
     name: value,
   })
   return match(status)
