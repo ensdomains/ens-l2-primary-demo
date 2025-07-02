@@ -44,7 +44,7 @@ const getPrimaryNameOption = (primaryNameOptionId: number) =>
 
 export const TransactionDialog = () => {
   const { dismiss, getCurrentView } = useTransactionStore()
- 
+
   const { view } = getCurrentView()
 
   return (
@@ -125,9 +125,9 @@ export const TransactionDialog = () => {
             />
           ),
         )
-        .otherwise(({ name }) => (
-          <div>No flow: {name}</div>
-        ))}
+        .otherwise(({ name }) =>
+          import.meta.env.DEV ? <div>No flow: {name}</div> : null,
+        )}
     </Dialog>
   )
 }

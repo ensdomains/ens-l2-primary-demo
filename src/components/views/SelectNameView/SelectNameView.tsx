@@ -1,4 +1,4 @@
-import { Dialog, Input, Button, Helper } from "@ensdomains/thorin"
+import { Dialog, Input, Button, Helper, Typography } from "@ensdomains/thorin"
 import { Skeleton } from "@/components/atoms/Skeleton/Skeleton"
 import { useEffect, useState } from "react"
 import useDebouncedCallback from "@/hooks/useDebouncedCallback"
@@ -152,7 +152,9 @@ export const SelectNameView = ({
         </div>
         {showWarning && (
           <Helper alert='warning'>
-            {`You will need to complete a second transaction to update the ${primaryNameOption?.chain.name} address on this name.`}
+            <Typography fontVariant='body' color='textPrimary'>
+              {`You will need to complete a second transaction to update the ${primaryNameOption?.chain.name} address on this name.`}
+            </Typography>
           </Helper>
         )}
       </Dialog.Content>

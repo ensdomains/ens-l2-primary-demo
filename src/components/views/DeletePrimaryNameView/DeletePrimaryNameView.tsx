@@ -5,12 +5,12 @@ import {
 } from "../../../stores/transactionStore"
 import { TransactionView } from "@/components/views/TransactionView/TransactionView"
 import { SyncWalletAndNetworkView } from "../SyncAddressAndNetworkView/SyncAddressAndNetworkView"
-import { useSetPrimaryName } from "../../../hooks/send-transactions/useSetPrimaryName"
 import { shortenAddress } from "../../../utils/address"
 import { match, P } from "ts-pattern"
 import { NameData } from "@/hooks/useNameData"
 import { Address } from "viem"
 import { isValidPrimaryNameOptionId, isValidAddress, isValidNameData } from "@/utils/predicates"
+import { useDeletePrimaryName } from "@/hooks/send-transactions/useDeletePrimaryName"
 
 export interface DeletePrimaryNameView extends ViewBase {
   name: "delete-primary-name"
@@ -36,10 +36,9 @@ export const DeletePrimaryNameView = ({
 
   const { increment, decrement } = useTransactionStore()
 
-  const { status, execute, error, reset } = useSetPrimaryName({
+  const { status, execute, error, reset } = useDeletePrimaryName({
     targetAddress,
     primaryNameOption,
-    nameData: null,
   })
 
   return match(status)

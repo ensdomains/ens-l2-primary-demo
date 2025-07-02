@@ -1,49 +1,77 @@
-import { type Address, encodeFunctionData } from "viem"
+import { type Address, encodeFunctionData, getChainContractAddress, namehash } from "viem"
 import {
   usePrepareTransactionRequest,
   useSendTransaction,
+  // useWaitForTransactionReceipt,
 } from "wagmi"
 import { PrimaryOption } from "../../constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { useCheckAddressAndChain } from "../useCheckAddressAndChain"
 import { calculateTransactionStatus } from "@/utils/calculateTransactionStatus"
-import { reverseRegistrarSetNameSnippet } from "@ensdomains/ensjs/contracts"
-import { NameData } from "../useNameData"
+import {
+  reverseRegistrarSetNameSnippet,
+  registrySetResolverSnippet,
+} from "@ensdomains/ensjs/contracts"
+import { match, P } from "ts-pattern"
+import { ethereum } from "@/constants/chains"
+import { getReverseNode } from "@/utils/name"
+import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 
-export const useSetPrimaryName = ({
-  nameData,
+export const useDeletePrimaryName = ({
   targetAddress,
   primaryNameOption,
 }: {
-  nameData: NameData
   targetAddress: Address
   primaryNameOption: PrimaryOption
 }) => {
   const reverseRegistarAddress = primaryNameOption.reverseRegistarAddress
 
-  const { addTransaction, getCurrentViewPosition, updateView, getCurrentTransaction } = useTransactionStore()
+  const {
+    addTransaction,
+    getCurrentViewPosition,
+    updateView,
+    getCurrentTransaction,
+  } = useTransactionStore()
 
-  const { isAddressAndChainValid, isAddressValid, isChainValid } = useCheckAddressAndChain({
-    address: targetAddress,
-    chainId: primaryNameOption?.chain.id,
-  })
+  const { isAddressAndChainValid, isAddressValid, isChainValid } =
+    useCheckAddressAndChain({
+      address: targetAddress,
+      chainId: primaryNameOption?.chain.id,
+    })
 
   const {
     data: preparedRequest,
     isLoading: isPrepareLoading,
     error: prepareError,
     refetch,
-  } = usePrepareTransactionRequest({
-    to: reverseRegistarAddress,
-    chainId: primaryNameOption.chain.id,
-    data: encodeFunctionData({
-      abi: reverseRegistrarSetNameSnippet,
-      args: [nameData?.name ?? ""],
-    }),
-    query: {
-      enabled: isAddressAndChainValid,
-    }
-  })
+  } = usePrepareTransactionRequest(
+    match(primaryNameOption)
+    .with({ chain: { id: P.when((id) => id === ethereum.id)}}, () => ({
+      to: getChainContractAddress({
+        chain: ethereum,
+        contract: "ensRegistry",
+      }),
+      chainId: primaryNameOption.chain.id,
+      data: encodeFunctionData({
+        abi: registrySetResolverSnippet,
+        args: [namehash(getReverseNode(targetAddress)), EMPTY_ADDRESS ],
+      }),
+      query: {
+        enabled: isAddressAndChainValid,
+      },
+    }))
+    .otherwise(() => ({
+      to: reverseRegistarAddress,
+      chainId: primaryNameOption.chain.id,
+      data: encodeFunctionData({
+        abi: reverseRegistrarSetNameSnippet,
+        args: [""],
+      }),
+      query: {
+        enabled: isAddressAndChainValid,
+      },
+    })),
+  )
 
   const position = getCurrentViewPosition()
   const {
@@ -61,7 +89,7 @@ export const useSetPrimaryName = ({
           transaction: {
             status: "sent",
             hash: data,
-          }
+          },
         })
       },
     },
@@ -88,7 +116,8 @@ export const useSetPrimaryName = ({
     isPending: isPending,
     isSent: currentTransaction?.status === "sent",
     isConfirmed: currentTransaction?.status === "confirmed",
-    isError: currentTransaction?.status === "failed" || !!prepareError || !!sendError,
+    isError:
+      currentTransaction?.status === "failed" || !!prepareError || !!sendError,
   })
 
   return {
@@ -99,7 +128,7 @@ export const useSetPrimaryName = ({
       refetch()
       resetSend()
       updateView(position, {
-        transaction: undefined
+        transaction: undefined,
       })
     },
   }

@@ -16,12 +16,11 @@ export const getL2PrimaryNameSource: GetL2PrimaryNameFn = (chainId) =>
     const currentChain = config.chains.find((c) => c.id === chainId)
     if (!currentChain) throw new Error("chain not found")
 
-    console.warn("DIRECT QUERY L2", currentChain.name)
     const registrarAddress = getChainContractAddress({
       chain: currentChain,
       contract: "l2ReverseRegistrar",
     })
-    console.warn("UsePrimaryName: registrar address", registrarAddress)
+    
     const client = config.getClient({ chainId: currentChain.id })
     return readContract(client, {
       address: registrarAddress,

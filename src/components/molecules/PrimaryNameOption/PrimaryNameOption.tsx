@@ -159,7 +159,7 @@ export const OptionAddressRecordItem = ({
               </Typography>
               {status === "inherited" && (
                 <Typography fontVariant='extraSmall' color='textSecondary'>
-                  Inherited from Default
+                  Resolved from Default
                 </Typography>
               )}
             </div>
@@ -212,7 +212,7 @@ export const OptionNameRecordItem = ({
               </Typography>
               {status === "inherited" && (
                 <Typography fontVariant='extraSmall' color='textSecondary'>
-                  Resolved from Default
+                  Inherited from Default
                 </Typography>
               )}
             </div>

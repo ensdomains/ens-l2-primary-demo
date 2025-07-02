@@ -1,13 +1,12 @@
 import { Typography } from "@ensdomains/thorin"
 import { Avatar } from "@ensdomains/thorin"
 import { NameData } from "@/hooks/useNameData"
-import { ethereum } from "@/constants/chains"
 import { match, P } from "ts-pattern"
 import { shortenAddress } from "@/utils/address"
 import { coinContent, container, icon } from "./NameItem.css"
 import { text } from "./NameItem.css"
 import { content } from "./NameItem.css"
-import { useEnsAvatar } from "wagmi"
+import { useEnsAvatar } from "@/hooks/useEnsAvatar"
 import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 
@@ -15,10 +14,6 @@ export const NameItem = ({ nameData, primaryNameOption }: { nameData: NameData, 
   const coin = nameData.coins.find((coin) => coin.coinType === primaryNameOption.chain.coinType)
 
   const { data: avatar } = useEnsAvatar({
-    chainId: ethereum.id,
-    assetGatewayUrls: {
-      ipfs: "https://ipfs.euc.li",
-    },
     name: nameData.name,
   })
 

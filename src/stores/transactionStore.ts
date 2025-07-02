@@ -183,7 +183,7 @@ export const useTransactionStore = create<TransactionStore>()(
               false,
               "transaction-confirmed",
             )
-            get().queryClient?.invalidateQueries({ refetchType: "all" })
+            await get().queryClient?.invalidateQueries({ refetchType: "all" })
           } catch (error) {
             set((state) => ({
               ...state,
@@ -329,7 +329,6 @@ export const useTransactionStore = create<TransactionStore>()(
             const flow = state.flows[currentKey]
             if (!flow) return state
 
-            console.log("decrement", { currentKey, flow })
             const newViewIndex = flow.viewIndex - 1
             if (newViewIndex < 0)
               return {
