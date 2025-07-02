@@ -31,7 +31,7 @@ export const getPrimaryNameSource: UseSourcePrimaryNameFn =
 
     // Wrapping in a try catch becase readContract will throw if name does not exist
     try {
-      return readContract(client, {
+      const name = await readContract(client, {
         address: reverseResolver,
         abi: parseAbi([
           "function name(bytes32 node) public view returns (string)",
@@ -39,6 +39,7 @@ export const getPrimaryNameSource: UseSourcePrimaryNameFn =
         functionName: "name",
         args: [getReverseNodeHash(address, { ns: "addr" })],
       })
+      return name
     } catch {
       return null
     }
