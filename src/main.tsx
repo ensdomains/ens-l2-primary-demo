@@ -16,6 +16,7 @@ import { Layout } from "./components/layouts/Layout/Layout.tsx"
 import { IdentifierPage } from "./components/pages/IdentifierPage.tsx"
 import { SplashPage } from "./components/pages/SplashPage/SplashPage.tsx"
 import { TransactionStoreProvider } from "./providers/TransactionStoreProvider.tsx"
+import { IntercomProvider} from 'react-use-intercom'
 
 globalThis.Buffer = Buffer
 
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <RainbowKitProvider>
           <ThemeProvider defaultMode='light'>
             <TransactionStoreProvider>
+              <IntercomProvider appId={import.meta.env.VITE_INTERCOM_ID || 'eotmigir'} autoBoot>
               <BrowserRouter>
                 <Layout>
                   <Routes>
@@ -36,6 +38,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                   </Routes>
                 </Layout>
               </BrowserRouter>
+              </IntercomProvider>
             </TransactionStoreProvider>
           </ThemeProvider>
         </RainbowKitProvider>

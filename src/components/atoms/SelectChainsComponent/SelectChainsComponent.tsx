@@ -1,4 +1,4 @@
-import { chains, ChainWithMetaData } from "@/constants/chains"
+import { chains, ChainWithDetails } from "@/constants/chains"
 import {
   container,
   iconContainer,
@@ -15,7 +15,7 @@ const ChainOption = ({
   disabled,
   onClick,
 }: {
-  chain: ChainWithMetaData
+  chain: ChainWithDetails
   selected: boolean
   disabled: boolean
   onClick: () => void
@@ -47,11 +47,11 @@ const ChainOption = ({
 
 export const SelectChainsComponent = ({
   selectedCoinTypes = [],
-  disabledCoinTypes = [],
+  previousCoinTypes = [],
   onChange,
 }: {
   selectedCoinTypes: number[]
-  disabledCoinTypes: number[]
+  previousCoinTypes: number[]
   onChange: (coinType: number, selected: boolean) => void
 }) => {
   return (
@@ -60,9 +60,10 @@ export const SelectChainsComponent = ({
         <ChainOption
           key={chain.id}
           chain={chain}
-          disabled={disabledCoinTypes.includes(chain.coinType)}
-          selected={selectedCoinTypes.includes(chain.coinType)}
+          disabled={previousCoinTypes.includes(chain.coinType)}
+          selected={selectedCoinTypes.includes(chain.coinType) || previousCoinTypes.includes(chain.coinType)}
           onClick={() => {
+            if (previousCoinTypes.includes(chain.coinType)) return
             onChange(
               chain.coinType,
               !selectedCoinTypes.includes(chain.coinType),

@@ -2,6 +2,7 @@ import { useAccount, useConfig, useSwitchChain } from "wagmi"
 import { useEffect, useState } from "react"
 import { Address } from "viem"
 import { getChainId } from "wagmi/actions"
+import { ChainWithDetails } from "@/constants/chains"
 
 // When switchAccount is called with useAccount, chainID will update immediately but then will switch back if the 
 // wallet does not support the chain. This can cause issues where the screen flashes or cause infinite re-renders 
@@ -52,7 +53,7 @@ export const useAccountWithSafeSwitchChain = ({
         const address = connection.accounts[0]
         const chainId = connection.chainId
         if (address === requiredAddress && chainId !== requiredChainId) {
-          await switchChainAsync({ chainId: requiredChainId })
+          await switchChainAsync({ chainId: requiredChainId as ChainWithDetails['id']})
           const newChainId = await getChainId(config)
           return setAddressAndChainId({ address, chainId: newChainId })
         }

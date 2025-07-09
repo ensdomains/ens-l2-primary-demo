@@ -1,0 +1,68 @@
+import { Address, Chain, ChainContract } from "viem";
+import { 
+  mainnet,
+  sepolia,
+  base,
+  baseSepolia,
+  arbitrum,
+  arbitrumSepolia,
+  optimism,
+  optimismSepolia,
+  linea,
+  lineaSepolia,
+  scroll,
+  scrollSepolia,
+ } from "viem/chains";
+
+const contractAddressDictionary: Record<number, Record<string, Address>> = {
+  [mainnet.id]: {},
+  [sepolia.id]: {
+    ensDefaultReverseRegistrar: "0x4F382928805ba0e23B30cFB75fC9E848e82DFD47",
+    ensReverseRegistrar: "0xA0a1AbcDAe1a2a4A2EF8e9113Ff0e02DD81DC0C6",
+    ensUniversalResolver:"0xb7B7DAdF4D42a08B3eC1d3A1079959Dfbc8CFfCC",
+  },
+  [optimism.id]: {},
+  [optimismSepolia.id]: {
+    l1ReverseResolver: "0xc9Ae189772BD48e01410AB3Be933637ee9D3AA5f",
+    l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
+  },
+  [arbitrum.id]: {},
+  [arbitrumSepolia.id]: {
+    l1ReverseResolver: "0x926f94D2aDC77C86Cb0050892097D49AADd02e8B",
+    l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
+  },
+  [base.id]: {},
+  [baseSepolia.id]: {
+    l1ReverseResolver: "0xaF3b3f636bE80b6709F5Bd3A374d6ac0D0a7c7aA",
+    l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
+  },
+  [linea.id]: {},
+  [lineaSepolia.id]: {
+    l1ReverseResolver: "0x083dA1Dbc0F379ccda6AC81A934207c3D8a8a205",
+    l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
+  },
+  [scroll.id]: {},
+  [scrollSepolia.id]: {
+    l1ReverseResolver: "0x9Fa59673e43F15bDB8722Fdaf5C2107574B99062",
+    l2ReverseRegistrar: "0x00000BeEF055f7934784D6d81b6BC86665630dbA",
+  },
+} as const
+
+export type ChainWithContracts<T extends Chain> = T & {
+  contracts: {
+    l1ReverseResolver?: ChainContract
+    l2ReverseRegistrar?: ChainContract
+  }
+}
+
+export const addContracts = <T extends Chain>(chain: T): ChainWithContracts<T> => {
+  const contractAddressRecords = contractAddressDictionary[chain.id] || {}
+  const contracts = Object.fromEntries(Object.entries(contractAddressRecords).map(([key, value]) => [key, { address: value }])) satisfies {[key: string]: ChainContract}
+  return {
+    ...chain,
+    contracts: {
+      ...chain.contracts,
+     ...contracts
+    },
+  };
+};

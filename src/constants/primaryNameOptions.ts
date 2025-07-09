@@ -1,4 +1,4 @@
-import { ChainWithMetaData, ethereum, l2Chains } from './chains';
+import { ethereum, l2Chains, ChainWithDetails } from './chains';
 import ensIcon from '@/assets/chain-icon/ens.svg';
 import { UseSourcePrimaryNameFn } from '@/hooks/useSourcePrimaryName/useSourcePrimaryName';
 import { getPrimaryNameSource } from '@/hooks/useSourcePrimaryName/functions/getPrimaryName';
@@ -10,7 +10,7 @@ export type PrimaryOption = {
   id: number
   name: string
   description?: string
-  chain: ChainWithMetaData
+  chain: ChainWithDetails
   icon: string,
   sourceQuery: UseSourcePrimaryNameFn
   reverseRegistarAddress: Address

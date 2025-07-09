@@ -14,64 +14,55 @@ import {
   scrollSepolia as scrollSepoliaViem,
 } from "viem/chains"
 
-import arbitrumIcon from "@/assets/chain-icon/arbitrum.svg";
-import baseIcon from "@/assets/chain-icon/base.svg";
-import ethereumIcon from "@/assets/chain-icon/ethereum.svg";
-import lineaIcon from "@/assets/chain-icon/linea.svg";
-import optimismIcon from "@/assets/chain-icon/optimism.svg";
-import scrollIcon from "@/assets/chain-icon/scroll.svg";
-import { addPrimaryNameContractsAndChainData, ChainWithChainData } from "@/addPrimaryNameContracts";
+import { addChainModifiers } from "@/utils/chainModifiers"
+import { match, P } from "ts-pattern"
 
-const isTestnet = import.meta.env.DEV || import.meta.env.VITE_ENV === 'dev'
+const chainGroup = match({
+  hostname: window?.location?.hostname,
+  isDev: import.meta.env.DEV,
+})
+  .with(
+    {
+      isDev: true,
+    },
+    {
+      hostname: P.union(
+        P.string.startsWith("sepolia"),
+        P.string.includes("pages.dev"),
+        P.string.startsWith("localhost"),
+        P.string.startsWith("127.0.0.1"),
+      ),
+    },
+    () => "sepolia",
+  )
+  .with({ hostname: P.string.startsWith("app.ens.domains") }, () => "mainnet")
+  .otherwise(() => "sepolia")
 
-export type ChainWithMetaData = ChainWithChainData & {
-  icon: string
-  syncTime: string
-  chainType: 'l1' | 'l2'
-}
+const isTestnet = chainGroup === "sepolia"
 
-export const ethereum: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(addEnsContracts(isTestnet ? sepoliaViem : mainnetViem)), 
-  icon: ethereumIcon,
-  syncTime: '1 block',
-  chainType: 'l1'
-}
-export const base: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? baseSepoliaViem : baseViem),
-  icon: baseIcon,
-  syncTime: '6 hr',
-  chainType: 'l2'
-}
+export type ChainWithDetails =
+  | typeof ethereum
+  | typeof base
+  | typeof arbitrum
+  | typeof optimism
+  | typeof linea
+  | typeof scroll
 
-export const arbitrum: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? arbitrumSepoliaViem : arbitrumViem),
-  icon: arbitrumIcon,
-  syncTime: '6 hr',
-  chainType: 'l2'
-}
-export const optimism: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? optimismSepoliaViem : optimismViem),
-  icon: optimismIcon,
-  syncTime: '6 hr',
-  chainType: 'l2'
-}
-export const linea: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? lineaSepoliaViem : lineaViem),
-  icon: lineaIcon,
-  syncTime: '8 - 24hr',
-  chainType: 'l2'
-}
+export const ethereum = addChainModifiers(
+  addEnsContracts(isTestnet ? sepoliaViem : mainnetViem),
+)
+export const base = addChainModifiers(isTestnet ? baseSepoliaViem : baseViem)
+export const arbitrum = addChainModifiers(
+  isTestnet ? arbitrumSepoliaViem : arbitrumViem,
+)
+export const optimism = addChainModifiers(
+  isTestnet ? optimismSepoliaViem : optimismViem,
+)
+export const linea = addChainModifiers(isTestnet ? lineaSepoliaViem : lineaViem)
+export const scroll = addChainModifiers(
+  isTestnet ? scrollSepoliaViem : scrollViem,
+)
 
-export const scroll: ChainWithMetaData = { ...addPrimaryNameContractsAndChainData(isTestnet ? scrollSepoliaViem : scrollViem),
-  icon: scrollIcon,
-  syncTime: '1 hr',
-  chainType: 'l2'
-}
+export const l2Chains = [base, arbitrum, optimism, linea, scroll] as const
 
-export const l2Chains = [
-  base,
-  arbitrum,
-  optimism,
-  linea,
-  scroll,
-] as const
-
-export const chains = [
-  ethereum,
-  ...l2Chains,
-] as const
+export const chains = [ethereum, ...l2Chains] as const

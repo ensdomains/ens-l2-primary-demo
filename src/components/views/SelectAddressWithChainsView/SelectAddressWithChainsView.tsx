@@ -143,7 +143,7 @@ export const SelectAddressWithChainsView = ({
           .with("select-chains", () => (
             <SelectChainsComponent
               selectedCoinTypes={coinTypes}
-              disabledCoinTypes={nameDataCoinTypesWithAddress({
+              previousCoinTypes={nameDataCoinTypesWithAddress({
                 nameData,
                 address: targetAddress,
               })}

@@ -24,18 +24,26 @@ export const chainOption = style({
 export const chainOptionVariant = styleVariants({
   unchecked: [chainOption, {
     background: modeVars.color.background,
+    cursor: "pointer",
     ":hover": {
       transform: "translateY(-1px)",
     }
   }],
   checked: [chainOption, {
     background: modeVars.color.accentSurface,
+    cursor: "pointer",
+    ":hover": {
+      transform: "translateY(-1px)",
+    }
   }],
   uncheckedDisabled: [chainOption, {
     background: modeVars.color.greySurface,
+    cursor: "not-allowed",
+    pointerEvents: "none",
   }],
   checkedDisabled: [chainOption, {
     background: modeVars.color.greySurface,
+    cursor: "not-allowed",
   }]
 })
 
