@@ -46,7 +46,7 @@ export const useDeletePrimaryName = ({
     refetch,
   } = usePrepareTransactionRequest(
     match(primaryNameOption)
-    .with({ chain: { id: P.when((id) => id === ethereum.id)}}, () => ({
+    .with({ id: P.when((id) => id === ethereum.id)}, () => ({
       to: getChainContractAddress({
         chain: ethereum,
         contract: "ensRegistry",
