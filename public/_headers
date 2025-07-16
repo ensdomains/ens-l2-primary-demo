@@ -1,1 +1,1 @@
-Content-Security-Policy: worker-src 'self'; script-src 'self' https://static.cloudflareinsights.com *.ens-l2-primary.pages.dev *.ens.domains 'wasm-unsafe-eval' 'sha256-84jekTLuMPFFzbBxEFpoUhJbu81z5uBinvhIKKkAPxg=' chrome-extension: moz-extension:;
+Content-Security-Policy: worker-src 'self'; script-src 'self' https://static.cloudflareinsights.com *.ens-l2-primary.pages.dev *.ens.domains 'wasm-unsafe-eval' 'sha256-84jekTLuMPFFzbBxEFpoUhJbu81z5uBinvhIKKkAPxg=';
