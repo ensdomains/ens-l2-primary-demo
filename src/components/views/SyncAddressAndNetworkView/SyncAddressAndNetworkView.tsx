@@ -3,8 +3,7 @@ import { tryPredicate } from "@/utils/tryPredicate"
 import { Dialog, Typography } from "@ensdomains/thorin"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
 import { Address } from "viem"
-import { useConfig } from "wagmi"
-import { disconnect } from "wagmi/actions"
+import { useConfig, useDisconnect } from "wagmi"
 import { ChangeAddressView } from "./views/ChangeAddressView/ChangeAddressView"
 import { match } from "ts-pattern"
 import { useEffect, useState } from "react"
@@ -33,6 +32,7 @@ export const SyncWalletAndNetworkView = ({
   const config = useConfig()
   const { decrement } = useTransactionStore()
   const { openConnectModal } = useConnectModal()
+  const { disconnect } = useDisconnect()
 
   const network =
     chains.find((chain) => chain.id === requiredChainId)?.name || "unknown"
@@ -91,7 +91,7 @@ export const SyncWalletAndNetworkView = ({
             colorStyle='accentPrimary'
             onBack={decrement}
             onClick={async () => {
-              await disconnect(config)
+              await disconnect()
               await tryPredicate(
                 async () => config.state.status === "disconnected",
               )
