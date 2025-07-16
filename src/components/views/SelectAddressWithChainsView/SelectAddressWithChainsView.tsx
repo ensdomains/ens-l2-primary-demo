@@ -8,7 +8,7 @@ import {
   View,
 } from "@/stores/transactionStore"
 import { nameDataCoinTypesWithAddress } from "@/utils/nameData"
-import { Button, Dialog, LeftArrowSVG } from "@ensdomains/thorin"
+import { Button, Dialog } from "@ensdomains/thorin"
 import { match, P } from "ts-pattern"
 import { Address, isAddress } from "viem"
 import {
@@ -24,6 +24,7 @@ import {
   isValidSyncTimeWarningView,
   SyncTimeWarningView,
 } from "../SyncTimeWarning/SyncTimeWarning"
+import { ButtonWithBackButton } from "@/components/molecules/ButtonWithBackButton/ButtonWithBackButton"
 
 export interface SelectAddressWithChainsView extends ViewBase {
   name: "select-address-with-chains"
@@ -159,19 +160,7 @@ export const SelectAddressWithChainsView = ({
               Cancel
             </Button>
           ))
-          .otherwise(() => (
-            <Button
-              colorStyle='accentSecondary'
-              shape='square'
-              onClick={() => {
-                updateView(getCurrentViewPosition(), {
-                  subView: "select-address",
-                })
-              }}
-            >
-              <LeftArrowSVG style={{ width: 16, height: 16 }} />
-            </Button>
-          ))}
+          .otherwise(() => undefined)}
         trailing={match(subView)
           .with("select-address", () => (
             <Button
@@ -187,15 +176,20 @@ export const SelectAddressWithChainsView = ({
             </Button>
           ))
           .otherwise(() => (
-            <Button
+            <ButtonWithBackButton
               colorStyle='accentPrimary'
               disabled={!hasNext()}
               onClick={() => {
                 increment()
               }}
+              onBack={() => {
+                updateView(getCurrentViewPosition(), {
+                  subView: "select-address",
+                })
+              }}
             >
               Next
-            </Button>
+            </ButtonWithBackButton>
           ))}
       />
     </>

@@ -1,6 +1,6 @@
 import { useTransactionStore } from "@/stores/transactionStore"
 import { tryPredicate } from "@/utils/tryPredicate"
-import { Button, Dialog, Typography, LeftArrowSVG } from "@ensdomains/thorin"
+import { Dialog, Typography } from "@ensdomains/thorin"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
 import { Address } from "viem"
 import { useConfig } from "wagmi"
@@ -10,6 +10,7 @@ import { match } from "ts-pattern"
 import { useEffect, useState } from "react"
 import { ChangeChainView } from "./views/ChangeChainView/ChangeChainView"
 import { chains } from "@/constants/chains"
+import { ButtonWithBackButton } from "@/components/molecules/ButtonWithBackButton/ButtonWithBackButton"
 
 export const SyncWalletAndNetworkView = ({
   status,
@@ -85,18 +86,10 @@ export const SyncWalletAndNetworkView = ({
         )}
       </Dialog.Content>
       <Dialog.Footer
-        leading={
-          <Button
-            colorStyle='accentSecondary'
-            shape='square'
-            onClick={decrement}
-          >
-            <LeftArrowSVG style={{ width: "1rem", height: "1rem" }} />
-          </Button>
-        }
         trailing={
-          <Button
+          <ButtonWithBackButton
             colorStyle='accentPrimary'
+            onBack={decrement}
             onClick={async () => {
               await disconnect(config)
               await tryPredicate(
@@ -106,7 +99,7 @@ export const SyncWalletAndNetworkView = ({
             }}
           >
             Switch connection
-          </Button>
+          </ButtonWithBackButton>
         }
       />
     </>

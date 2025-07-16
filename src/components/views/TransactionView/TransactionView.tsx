@@ -1,8 +1,6 @@
 import {
-  Button,
   Dialog,
   Helper,
-  LeftArrowSVG,
   Typography,
 } from "@ensdomains/thorin"
 import walletIcon from "@/assets/wallet.svg"
@@ -15,6 +13,7 @@ import { LoadBar, Status } from "@/components/atoms/LoadBar/LoadBar"
 import { match, P } from "ts-pattern"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { getPreTransactionError } from "@/utils/error"
+import { ButtonWithBackButton } from "@/components/molecules/ButtonWithBackButton/ButtonWithBackButton"
 
 const DetailItem = ({
   label,
@@ -123,12 +122,7 @@ export const TransactionView = ({
         )}
       </Dialog.Content>
       <Dialog.Footer
-        leading={
-          <Button colorStyle='accentSecondary' onClick={onBack} shape='square'>
-            <LeftArrowSVG style={{ width: "1rem", height: "1rem" }} />
-          </Button>
-        }
-        trailing={<Button {...buttonProps} />}
+        trailing={<ButtonWithBackButton {...buttonProps} onBack={onBack} />}
       />
     </>
   )

@@ -8,7 +8,7 @@ import {
 } from "@/stores/transactionStore"
 import { isDefined, isValidPrimaryNameOptionId } from "@/utils/predicates"
 import { isValidAddress } from "@/utils/predicates"
-import { Button, Dialog, LeftArrowSVG } from "@ensdomains/thorin"
+import { Button, Dialog } from "@ensdomains/thorin"
 import { match } from "ts-pattern"
 import { Address, isAddress } from "viem"
 import {
@@ -25,6 +25,7 @@ import {
   isValidSyncTimeWarningView,
   SyncTimeWarningView,
 } from "../SyncTimeWarning/SyncTimeWarning"
+import { ButtonWithBackButton } from "@/components/molecules/ButtonWithBackButton/ButtonWithBackButton"
 
 export interface SelectNameWithChainsView extends ViewBase {
   name: "select-name-with-chains"
@@ -69,10 +70,11 @@ export const calculateSelectNameWithChainsTransactionFlow = ({
       targetAddress,
       primaryNameOptionId,
       coinTypes:
-        coinTypes.filter((c) =>
-          !nameData.coins.some(
-            (coin) => coin.coinType === c && coin.value === targetAddress,
-          ),
+        coinTypes.filter(
+          (c) =>
+            !nameData.coins.some(
+              (coin) => coin.coinType === c && coin.value === targetAddress,
+            ),
         ) ?? [],
     } satisfies SetRecordsView)
       .with(isValidSetRecordsView, (view) => view)
@@ -139,7 +141,10 @@ export const SelectNameWithChainsView = ({
               })}
               onChange={(coinType, selected) => {
                 updateView(getCurrentViewPosition(), {
-                  coinTypes: [...coinTypes.filter((c) => c !== coinType), ...(selected ? [coinType] : [])],
+                  coinTypes: [
+                    ...coinTypes.filter((c) => c !== coinType),
+                    ...(selected ? [coinType] : []),
+                  ],
                 })
                 generateTransactions()
               }}
@@ -154,17 +159,7 @@ export const SelectNameWithChainsView = ({
               Cancel
             </Button>
           ))
-          .otherwise(() => (
-            <Button
-              colorStyle='accentSecondary'
-              shape='square'
-              onClick={() => {
-                updateView(getCurrentViewPosition(), { subView: "select-name" })
-              }}
-            >
-              <LeftArrowSVG style={{ width: 16, height: 16 }} />
-            </Button>
-          ))}
+          .otherwise(() => undefined)}
         trailing={match(subView)
           .with("select-name", () => (
             <Button
@@ -179,15 +174,18 @@ export const SelectNameWithChainsView = ({
             </Button>
           ))
           .otherwise(() => (
-            <Button
+            <ButtonWithBackButton
               colorStyle='accentPrimary'
               disabled={!hasNext()}
               onClick={() => {
                 increment()
               }}
+              onBack={() => {
+                updateView(getCurrentViewPosition(), { subView: "select-name" })
+              }}
             >
               Next
-            </Button>
+            </ButtonWithBackButton>
           ))}
       />
     </>
