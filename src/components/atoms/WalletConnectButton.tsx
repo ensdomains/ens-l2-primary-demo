@@ -15,6 +15,7 @@ import { useEnsAvatar } from "@/hooks/useEnsAvatar"
 import { Divider } from "./Divider/Divider"
 import { shortenAddress } from "@/utils/address"
 import { Link } from "react-router"
+import { linkWrapper } from "./WalletConnectButton.css"
 
 export const WalletConnectButton = () => {
   const { address, chainId } = useAccount()
@@ -42,12 +43,12 @@ export const WalletConnectButton = () => {
           ...(primaryName ? [{
             label: "My name",
             icon: PersonSVG,
-            wrapper: (children: React.ReactNode) => <Link to={`/${primaryName}`}>{children}</Link>,
+            wrapper: (children: React.ReactNode) => <Link to={`/${primaryName}`} className={linkWrapper}>{children}</Link>,
           }] : []),
           {
             label: shortenAddress(address),
             icon: WalletSVG,
-            wrapper: (children: React.ReactNode) => <Link to={`/${address}`}>{children}</Link>,
+            wrapper: (children: React.ReactNode) => <Link to={`/${address}`} className={linkWrapper}>{children}</Link>,
           },
           <Divider />,
           {
