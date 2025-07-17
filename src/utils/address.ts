@@ -1,9 +1,9 @@
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Address, getAddress } from "viem"
 
-export const shortenAddress = (address: string = '') => {
+export const shortenAddress = (address: string = '', length = 5) => {
   const normalizedAddress = normalizeAddress(address)
-  return `${normalizedAddress.slice(0, 6)}...${normalizedAddress.slice(-4)}`
+  return `${normalizedAddress.slice(0, length)}...${normalizedAddress.slice(-length)}`
 }
 
 export const normalizeAddress = (address: string = ''): Address => {
