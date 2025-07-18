@@ -1,7 +1,7 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 import { chains } from "./constants/chains";
-import { fallback, http } from "viem";
+import { ccipRequest, fallback, http } from "viem";
 
 export const config_ = getDefaultConfig({
   appName: "ENS L2 Primary Demo",
@@ -12,7 +12,15 @@ export const config_ = getDefaultConfig({
       ...transports,
       [chain.id]: fallback(chain.rpcs.map((rpc) => http(rpc)))
     }
-  }, {})
+  }, {}),
+  // TODO: Remove this once we have a stable DRPC URL for mainnet.
+  ccipRead: {
+    request: (parameters) => {
+      if (parameters.urls[1] === "https://arbitrum.3668.io")
+        parameters.urls = [parameters.urls[1]];
+      return ccipRequest(parameters);
+    },
+  },
 });
 
 export type SupportedChain = (typeof config_.chains)[number];
