@@ -18,6 +18,7 @@ import { Divider } from "@/components/atoms/Divider/Divider"
 import { isLastIndex } from "@/utils/array"
 import { Fragment } from "react"
 import { Address } from "viem"
+import { shortenAddress } from "@/utils/address"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -94,7 +95,7 @@ export const NameCentricDefaultPrimaryNameOption = ({
               label='Address'
               status={status}
               incompleteMsg={`This address has not set ${name} as it's default primary name`}
-              syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
+              syncingMsg={`The address ${shortenAddress(address)} has been updated to resolve to ${name}. This change may take up to ${option.chain.syncTime} to complete.`}
             >
               <OptionAddressRecordItem
                 value={address}
