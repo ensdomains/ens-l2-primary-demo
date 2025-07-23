@@ -15,6 +15,7 @@ import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { Typography } from "@ensdomains/thorin"
 import { Address } from "viem"
 import { calculatePrimaryNameStatus } from "@/utils/calculatePrimaryNameStatus"
+import { shortenAddress } from "@/utils/address"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -77,7 +78,7 @@ export const NameCentricPrimaryNameOption = ({
         label='Address'
         status={status}
         incompleteMsg='To use this as your Primary Name you must update the address record'
-        syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
+        syncingMsg={`The address ${shortenAddress(address)} has been updated to resolve to ${name}. This change may take up to ${option.chain.syncTime} to complete.`}
       >
         <OptionAddressRecordItem
           value={address}
