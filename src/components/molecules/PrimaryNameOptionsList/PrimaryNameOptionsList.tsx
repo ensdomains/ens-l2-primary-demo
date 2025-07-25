@@ -9,6 +9,8 @@ import {
 } from "./PrimaryNameOptionsList.css"
 import { useCopied } from "@/hooks/useCopied"
 import { useNavigate } from "react-router"
+import { isAddress } from "viem"
+import { normalizeName } from "@/components/pages/IdentifierPage"
 
 export const PrimaryNameOptionsList = ({
   children,
@@ -24,7 +26,11 @@ export const PrimaryNameOptionsList = ({
       </div>
       <Input label="" placeholder="Search for a name or address" icon={<MagnifyingGlassSVG/>} onKeyDown={(e) => {
         if (e.key === "Enter") {
-          navigate(`/${e.currentTarget.value}`)
+          if (isAddress(e.currentTarget.value)) {
+            navigate(`/${e.currentTarget.value}`)
+          } else {
+            navigate(`/${normalizeName(e.currentTarget.value)}`)
+          }
         }
       }}/>
       <div className={content}>{children}</div>

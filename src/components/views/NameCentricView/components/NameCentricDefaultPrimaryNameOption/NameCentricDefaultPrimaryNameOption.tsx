@@ -11,7 +11,6 @@ import { useNameData } from "@/hooks/useNameData"
 import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
-import { Typography } from "@ensdomains/thorin"
 import { match } from "ts-pattern"
 import { useDefaultPrimaryNamesForAddresses } from "@/hooks/useDefaultPrimaryNamesForAddresses"
 import { Divider } from "@/components/atoms/Divider/Divider"
@@ -19,6 +18,7 @@ import { isLastIndex } from "@/utils/array"
 import { Fragment } from "react"
 import { Address } from "viem"
 import { shortenAddress } from "@/utils/address"
+import { NameCentricDefaultOptionDebugPanel } from "@/components/molecules/NameCentricDefaultOptionDebugPanel"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -122,18 +122,10 @@ export const NameCentricDefaultPrimaryNameOption = ({
         )
       })}
       {import.meta.env.DEV && (
-        <div>
-          {definedDefaultPrimaryNameAndAddressData.map(({ name, address }) => (
-            <Typography fontVariant='extraSmall' key={address}>
-              sourceValue: {name} : {address}
-            </Typography>
-          ))}
-          {nameData?.coins.map((coin) => (
-            <Typography fontVariant='extraSmall' key={coin.id}>
-              record: {coin.id} : {coin.value}
-            </Typography>
-          ))}
-        </div>
+        <NameCentricDefaultOptionDebugPanel
+          names={definedDefaultPrimaryNameAndAddressData}
+          nameData={nameData}
+        />
       )}
       <OptionAction
         status={status || "active"}
