@@ -1,4 +1,4 @@
-import { Button, CheckSVG, CopySVG, Input, OutlinkSVG, Typography, MagnifyingGlassSVG } from "@ensdomains/thorin"
+import { Button, CheckSVG, CopySVG, OutlinkSVG, Typography } from "@ensdomains/thorin"
 import {
   container,
   header,
@@ -8,31 +8,19 @@ import {
   listHeaderActions,
 } from "./PrimaryNameOptionsList.css"
 import { useCopied } from "@/hooks/useCopied"
-import { useNavigate } from "react-router"
-import { isAddress } from "viem"
-import { normalizeName } from "@/components/pages/IdentifierPage"
+import { SearchInput } from "@/components/molecules/SearchInput"
 
 export const PrimaryNameOptionsList = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const navigate = useNavigate()
-
   return (
     <div className={container}>
       <div className={header}>
         <Typography fontVariant='headingOne'>L2 Primary Name</Typography>
       </div>
-      <Input label="" placeholder="Search for a name or address" icon={<MagnifyingGlassSVG/>} onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          if (isAddress(e.currentTarget.value)) {
-            navigate(`/${e.currentTarget.value}`)
-          } else {
-            navigate(`/${normalizeName(e.currentTarget.value)}`)
-          }
-        }
-      }}/>
+      <SearchInput />
       <div className={content}>{children}</div>
     </div>
   )
