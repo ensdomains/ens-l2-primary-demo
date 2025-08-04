@@ -17,7 +17,9 @@ import {
 const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${import.meta.env.VITE_DRPC_KEY}`
 
 const rpcDict: Record<number, string[]> = {
-  [mainnet.id]: [drpcUrl('mainnet')],
+  [mainnet.id]: [drpcUrl('ethereum')],
+  // TODO: Switch back to the DRPC URL when the main net contracts are ready.
+  // [mainnet.id]: ['https://virtual.mainnet.rpc.tenderly.co/b28fb5ef-fde7-426c-b2d7-b2c892961468'],
   [sepolia.id]: [drpcUrl('sepolia'), 'https://sepolia.drpc.org'],
   [optimism.id]: [drpcUrl('optimism')],
   [optimismSepolia.id]: [drpcUrl('optimism-sepolia'), 'https://sepolia.optimism.io'],
