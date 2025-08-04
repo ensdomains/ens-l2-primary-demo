@@ -12,7 +12,6 @@ import type { ConfigWithEns, CreateQueryKey, QueryConfig } from "../query/query"
 import { useQueryOptions } from "./useQueryOptions"
 import { getOwner, GetOwnerReturnType } from "@ensdomains/ensjs/public"
 import { ethereum } from "../constants/chains"
-import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
 import { readContract } from "viem/actions"
 import { dnsEncodeName } from "../utils/name"
 import { chains } from "../constants/chains"
@@ -110,12 +109,7 @@ export const getNameDataQueryFn =
     const client = config.getClient({ chainId }) as unknown as ClientWithEns
 
     const ownership = await getOwner(client, { name: name })
-    if (
-      !ownership ||
-      ownership.owner === EMPTY_ADDRESS ||
-      ownership.registrant === EMPTY_ADDRESS
-    )
-      return null
+    if (!ownership) return null
 
     const calls = chains.map((chain) =>
       chain.coinType === 60

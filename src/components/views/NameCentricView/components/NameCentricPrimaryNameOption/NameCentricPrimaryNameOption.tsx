@@ -22,10 +22,12 @@ const transactionKey = (name: string, option: PrimaryOption) =>
 
 export const NameCentricPrimaryNameOption = ({
   name,
-  option,
+  option, 
+  disabled,
 }: {
   name: string
   option: PrimaryOption
+  disabled?: boolean
 }) => {
   const { isFlowConfirming, createTransactionFlow } = useTransactionStore()
 
@@ -110,6 +112,7 @@ export const NameCentricPrimaryNameOption = ({
       )}
       <OptionAction
         status={status}
+        disabled={disabled}
         onClick={() => {
           if (!nameData) return
           createTransactionFlow(transactionKey(name, option), {

@@ -11,8 +11,10 @@ import { useCopied } from "@/hooks/useCopied"
 import { SearchInput } from "@/components/molecules/SearchInput"
 
 export const PrimaryNameOptionsList = ({
+  banner = null,
   children,
 }: {
+  banner?: React.ReactNode
   children: React.ReactNode
 }) => {
   return (
@@ -21,6 +23,7 @@ export const PrimaryNameOptionsList = ({
         <Typography fontVariant='headingOne'>L2 Primary Name</Typography>
       </div>
       <SearchInput />
+      {banner}
       <div className={content}>{children}</div>
     </div>
   )
