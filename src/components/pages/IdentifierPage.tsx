@@ -11,7 +11,7 @@ const isName = (identifier: string): boolean => {
   return !!identifier
 }
 
-const normalizeName = (name: string): string => {
+export const normalizeName = (name: string): string => {
   try {
     const nameWithTLD = name.indexOf(".") === -1 ? `${name}.eth` : name
     const normalizedName = normalise(nameWithTLD)

@@ -12,9 +12,10 @@ import { useResolvedPrimaryName } from "@/hooks/useResolvedPrimaryName"
 import { PrimaryOption } from "@/constants/primaryNameOptions"
 import { useTransactionStore } from "@/stores/transactionStore"
 import { EMPTY_ADDRESS } from "@ensdomains/ensjs/utils"
-import { Typography } from "@ensdomains/thorin"
 import { Address } from "viem"
 import { calculatePrimaryNameStatus } from "@/utils/calculatePrimaryNameStatus"
+import { shortenAddress } from "@/utils/address"
+import { NameCentricOptionDebugPanel } from "@/components/molecules/NameCentricOptionDebugPanel"
 
 const transactionKey = (name: string, option: PrimaryOption) =>
   `name:${name}::option:${option.id}`
@@ -77,7 +78,7 @@ export const NameCentricPrimaryNameOption = ({
         label='Address'
         status={status}
         incompleteMsg='To use this as your Primary Name you must update the address record'
-        syncingMsg='This has been updated to this address. This change may take up to 24 hours to complete.'
+        syncingMsg={`The address ${shortenAddress(address)} has been updated to resolve to ${name}. This change may take up to ${option.chain.syncTime} to complete.`}
       >
         <OptionAddressRecordItem
           value={address}
@@ -99,22 +100,13 @@ export const NameCentricPrimaryNameOption = ({
         />
       </OptionContent>
       {import.meta.env.DEV && (
-        <div>
-          <Typography fontVariant='extraSmall'>
-            resolvedValue: {resolvedValue}
-          </Typography>
-          <Typography fontVariant='extraSmall'>
-            sourceValue: {sourceValue}
-          </Typography>
-          <Typography fontVariant='extraSmall'>
-            record:{" "}
-            {
-              nameData?.coins.find(
-                (coin) => coin.coinType === option.chain.coinType,
-              )?.value
-            }
-          </Typography>
-        </div>
+        <NameCentricOptionDebugPanel
+          name={name}
+          resolvedValue={resolvedValue}
+          sourceValue={sourceValue}
+          nameData={nameData}
+          option={option}
+        />
       )}
       <OptionAction
         status={status}

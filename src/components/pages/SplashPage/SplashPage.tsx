@@ -2,6 +2,8 @@ import { Input, MagnifyingGlassSVG, Typography } from "@ensdomains/thorin"
 import { card, chainIcon, chainIcons, splashPage } from "./SplashPage.css"
 import { chains } from "@/constants/chains"
 import { useNavigate } from "react-router"
+import { isAddress } from "viem"
+import { normalizeName } from "../IdentifierPage"
 
 export const SplashPage = () => {
   const navigate = useNavigate()
@@ -21,7 +23,11 @@ export const SplashPage = () => {
           </div>
           <Input label="" placeholder="Search for a name or address" icon={<MagnifyingGlassSVG/>} onKeyDown={(e) => {
         if (e.key === "Enter") {
-          navigate(`/${e.currentTarget.value}`)
+          if (isAddress(e.currentTarget.value)) {
+            navigate(`/${e.currentTarget.value}`)
+          } else {
+            navigate(`/${normalizeName(e.currentTarget.value)}`)
+          }
         }
       }}/>
       </div>
