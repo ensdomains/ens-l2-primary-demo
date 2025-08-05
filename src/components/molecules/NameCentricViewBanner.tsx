@@ -24,29 +24,29 @@ export const NameCentricViewBanner = ({
     .with("available", () => (
       <Banner
         alert='warning'
-        icon={EthSVG}
         as='a'
         href={getENSLink(name)}
         target='_blank'
         rel='noopener noreferrer'
         title={`${name} is available.`}
+        style={{ wordBreak: 'break-all' }}
       >
         Click here to register.
       </Banner>
     ))
     .with(P.union("invalid", "unsupportedTLD", "short"), () => (
-      <Banner alert='error' icon={EthSVG} title='Invalid name'>
+      <Banner alert='error' title='Invalid name' style={{ wordBreak: 'break-all' }}>
         {name} is invalid. Please search for a different name.
       </Banner>
     ))
     .with(P.union("notOwned", "notImported"), () => (
-      <Banner alert='error' icon={EthSVG} title='Name not found'>
+      <Banner alert='error' title='Name not found' style={{ wordBreak: 'break-all' }}>
         {name} was not found in the registry. Please search for a different
         name.
       </Banner>
     ))
     .with("offChain", () => (
-      <Banner alert='warning' icon={EthSVG} title='Feature not available'>
+      <Banner alert='warning' title='Feature not available' style={{ wordBreak: 'break-all' }}>
         {name} is not registered on chain. Setting a primary names is not
         available.
       </Banner>
@@ -59,6 +59,7 @@ export const NameCentricViewBanner = ({
         href={getENSLink(name)}
         target='_blank'
         rel='noopener noreferrer'
+        style={{ wordBreak: 'break-all' }}
       >
         {name} is out of sync. Click here to go to the manager app to repair
         this name.
@@ -72,6 +73,7 @@ export const NameCentricViewBanner = ({
         href={getENSLink(name)}
         target='_blank'
         rel='noopener noreferrer'
+        style={{ wordBreak: 'break-all' }}
       >
         {name} is in the grace period. Click here to go to the manager app to
         renew it.

@@ -6,6 +6,7 @@ import {
   listHeader,
   listItem,
   listHeaderActions,
+  titleContainer,
 } from "./PrimaryNameOptionsList.css"
 import { useCopied } from "@/hooks/useCopied"
 import { SearchInput } from "@/components/molecules/SearchInput"
@@ -40,7 +41,9 @@ const Header = ({ value, title }: { value: string; title: string }) => {
   const {copy, copied} = useCopied()
   return (
     <div className={listHeader}>
-      <Typography fontVariant='headingTwo'>{title}</Typography>
+      <div className={titleContainer}>
+        <Typography fontVariant='headingTwo' >{title}</Typography>
+      </div>
       <div className={listHeaderActions}>
         <Button
           colorStyle='accentSecondary'

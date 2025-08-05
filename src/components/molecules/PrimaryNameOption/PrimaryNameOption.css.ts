@@ -80,6 +80,8 @@ export const recordItemContent = style({
 export const recordItemText = style({
   display: 'flex',
   flexDirection: 'column',
+  wordBreak: 'break-all',
+  flex: 1,
 })
 
 export const recordItemIcon = style({

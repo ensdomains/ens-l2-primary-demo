@@ -31,6 +31,10 @@ export const listHeader = style({
   padding: commonVars.space['6'],
 });
 
+export const titleContainer = style({
+  wordBreak: 'break-all',
+});
+
 export const listHeaderActions = style({
   display: 'flex',
   alignItems: 'center',
