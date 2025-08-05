@@ -263,9 +263,11 @@ export const OptionSupportedChains = ({
 export const OptionAction = ({
   status,
   onClick,
+  disabled,
 }: {
   status: PrimaryNameOptionStatus
   onClick: () => void
+  disabled?: boolean
 }) => {
   return match(status)
     .with("syncing", () => (
@@ -285,17 +287,17 @@ export const OptionAction = ({
       </Button>
     ))
     .with("active", () => (
-      <Button colorStyle='accentSecondary' onClick={onClick}>
+      <Button colorStyle='accentSecondary' onClick={onClick} disabled={disabled}>
         Update
       </Button>
     ))
     .with("incomplete", () => (
-      <Button colorStyle='accentSecondary' onClick={onClick}>
+      <Button colorStyle='accentSecondary' onClick={onClick} disabled={disabled}>
         Update record
       </Button>
     ))
     .with(P.union("inherited", "none-set"), () => (
-      <Button colorStyle='accentSecondary' onClick={onClick}>
+      <Button colorStyle='accentSecondary' onClick={onClick} disabled={disabled}>
         Set
       </Button>
     ))

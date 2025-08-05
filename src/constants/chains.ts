@@ -35,8 +35,8 @@ const chainGroup = match({
     },
     () => "sepolia",
   )
-  .with({ hostname: P.string.startsWith("app.ens.domains") }, () => "mainnet")
-  .otherwise(() => "sepolia")
+  .with({ hostname: P.string.startsWith("primary") }, () => "mainnet")
+  .otherwise(() => "mainnet")
 
 const isTestnet = chainGroup === "sepolia"
 
