@@ -26,9 +26,11 @@ const transactionKey = (name: string, option: PrimaryOption) =>
 export const NameCentricDefaultPrimaryNameOption = ({
   name,
   option,
+  disabled,
 }: {
   name: string
   option: PrimaryOption
+  disabled?: boolean
 }) => {
   const { createTransactionFlow, isFlowConfirming } = useTransactionStore()
 
@@ -38,7 +40,6 @@ export const NameCentricDefaultPrimaryNameOption = ({
     isFetching: isNameDataFetching,
   } = useNameData({
     name,
-    coinType: option.chain.coinType,
   })
 
   const addresses =
@@ -129,6 +130,7 @@ export const NameCentricDefaultPrimaryNameOption = ({
       )}
       <OptionAction
         status={status || "active"}
+        disabled={disabled}
         onClick={() => {
           if (!nameData) return
           createTransactionFlow(transactionKey(name, option), {
