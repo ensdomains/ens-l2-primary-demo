@@ -17,7 +17,7 @@ import {
 const drpcUrl = (chainName: string) => `https://lb.drpc.org/ogrpc?network=${chainName}&dkey=${import.meta.env.VITE_DRPC_KEY}`
 
 const rpcDict: Record<number, string[]> = {
-  [mainnet.id]: [drpcUrl('mainnet')],
+  [mainnet.id]: [drpcUrl('ethereum')],
   [sepolia.id]: [drpcUrl('sepolia'), 'https://sepolia.drpc.org'],
   [optimism.id]: [drpcUrl('optimism')],
   [optimismSepolia.id]: [drpcUrl('optimism-sepolia'), 'https://sepolia.optimism.io'],
