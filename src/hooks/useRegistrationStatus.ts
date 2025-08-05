@@ -1,6 +1,6 @@
-import { useQueries } from "@tanstack/react-query"
+import { useQueries, useQueryClient } from "@tanstack/react-query"
 import { useConfig } from "wagmi"
-import { getOwnerQuery } from "@/queries/getOwnerQuery"
+import { getOwnerQuery, getOwnerQueryKey } from "@/queries/getOwnerQuery"
 import { getExpiryQuery } from "@/queries/getExpiryQuery"
 import { getWrapperDataQuery } from "@/queries/getWrapperDataQuery"
 import { getBlockQuery } from "@/queries/getBlockQuery"
@@ -108,14 +108,17 @@ export const getRegistrationStatus = ({
 
 export const useRegistrationStatus = ({ name }: { name?: string }) => {
   const config = useConfig()
+  const queryClient = useQueryClient()
   return useQueries({
     queries: [
       getOwnerQuery(config, { name }),
       getWrapperDataQuery(config, {
         name,
+        enabled: !!queryClient.getQueryData(getOwnerQueryKey(name))
       }),
       getExpiryQuery(config, {
         name,
+        enabled: !!queryClient.getQueryData(getOwnerQueryKey(name))
       }),
       getBlockQuery(config),
       getValidationQuery({
@@ -123,6 +126,7 @@ export const useRegistrationStatus = ({ name }: { name?: string }) => {
       }),
       getAddressRecordQuery(config, {
         name,
+        enabled: !!queryClient.getQueryData(getOwnerQueryKey(name))
       }),
     ],
     combine: (results) => {
