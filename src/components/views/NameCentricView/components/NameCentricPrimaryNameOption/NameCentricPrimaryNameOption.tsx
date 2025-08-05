@@ -37,7 +37,6 @@ export const NameCentricPrimaryNameOption = ({
     isFetching: isNameDataFetching,
   } = useNameData({
     name,
-    coinType: option.chain.coinType,
   })
 
   const address =
