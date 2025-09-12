@@ -1,10 +1,10 @@
 import {
   Button,
   ExitSVG,
-  Profile,
   PersonSVG,
   WalletSVG,
 } from "@ensdomains/thorin"
+import { Profile } from "./Profile/Profile"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
 import { useAccount } from "wagmi"
 import { chains } from "@/constants/chains"

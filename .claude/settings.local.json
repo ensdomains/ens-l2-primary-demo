@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__figma-dev-mode-mcp-server__get_image",
+      "mcp__figma-dev-mode-mcp-server__get_code",
+      "mcp__figma-dev-mode-mcp-server__get_metadata"
     ],
     "deny": []
   }
