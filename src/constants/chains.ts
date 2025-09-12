@@ -18,7 +18,7 @@ import { addChainModifiers } from "@/utils/chainModifiers"
 import { match, P } from "ts-pattern"
 
 const chainGroup = match({
-  hostname: window?.location?.hostname,
+  hostname: typeof window !== "undefined" ? window.location.hostname : "",
   isDev: import.meta.env.DEV,
 })
   .with(
@@ -33,10 +33,10 @@ const chainGroup = match({
         P.string.startsWith("127.0.0.1"),
       ),
     },
-    () => "sepolia",
+    () => "sepolia" as const,
   )
-  .with({ hostname: P.string.startsWith("primary") }, () => "mainnet")
-  .otherwise(() => "mainnet")
+  .with({ hostname: P.string.startsWith("primary") }, () => "mainnet" as const)
+  .otherwise(() => "mainnet" as const)
 
 const isTestnet = chainGroup === "sepolia"
 
