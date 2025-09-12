@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react"
-import { Button, Dropdown } from "@ensdomains/thorin"
 import { shortenAddress } from "@/utils/address"
 import {
   profileButton,

@@ -12,26 +12,10 @@ import { useDisconnect } from "@/hooks/useDisconnect"
 import { useResolvedPrimaryName } from "@/hooks/useResolvedPrimaryName"
 import { useZorb } from "@/hooks/useZorb/useZorb"
 import { useEnsAvatar } from "@/hooks/useEnsAvatar"
-import { useTransactionStore } from "@/stores/transactionStore"
-import { useEffect, useState } from "react"
 import { Divider } from "./Divider/Divider"
 import { shortenAddress } from "@/utils/address"
 import { Link } from "react-router"
 import { linkWrapper } from "./WalletConnectButton.css"
-
-// NOTE: We will hide the button if there is a view open so that if the button needs to be re-rendered,
-// the dropdwon will be properly positioned. We also need to debounce the state change so that the modal is
-// gone before the button is rendered.
-const useIsHeaderVisible = () => {
-  const { getCurrentView } = useTransactionStore()
-  const { view } = getCurrentView()
-  const [isVisible, setIsVisible] = useState(!view)
-  useEffect(() => {
-    if (!view) setTimeout(() => setIsVisible(true), 0)
-    else setIsVisible(false)
-  }, [view])
-  return isVisible
-}
 
 
 export const WalletConnectButton = () => {
@@ -48,11 +32,8 @@ export const WalletConnectButton = () => {
 
   const zorb = useZorb(address ?? "")
 
-  const isVisible = useIsHeaderVisible()
-
   const { openConnectModal } = useConnectModal()
 
-  if (!isVisible) return null
   if (address) {
     return (
       <Profile
@@ -71,7 +52,7 @@ export const WalletConnectButton = () => {
             icon: WalletSVG,
             wrapper: (children: React.ReactNode) => <Link to={`/${address}`} className={linkWrapper}>{children}</Link>,
           },
-          <Divider />,
+          <Divider key="divider" />,
           {
             label: "Disconnect",
             icon: ExitSVG,

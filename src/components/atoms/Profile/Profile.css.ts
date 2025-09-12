@@ -142,7 +142,7 @@ export const dropdownItem = style({
 
 export const dropdownDivider = style({
   height: "1px",
-  backgroundColor: modeVars.color.borderTertiary,
+  backgroundColor: modeVars.color.border,
   margin: "6px 8px",
   opacity: 0.5,
 })
