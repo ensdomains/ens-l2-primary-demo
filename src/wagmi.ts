@@ -1,7 +1,7 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit"
 
 import { chains } from "./constants/chains"
-import { fallback, http, ccipRequest } from "viem"
+import { fallback, http } from "viem"
 
 export const config_ = getDefaultConfig({
   appName: "ENS L2 Primary Demo",
@@ -13,13 +13,6 @@ export const config_ = getDefaultConfig({
       [chain.id]: fallback(chain.rpcs.map((rpc) => http(rpc))),
     }
   }, {}),
-  ccipRead: {
-    request: (parameters) => {
-      if (parameters.urls[1] === "https://arbitrum.3668.io")
-        parameters.urls = [parameters.urls[1]]
-      return ccipRequest(parameters)
-    },
-  },
 })
 
 export type SupportedChain = (typeof config_.chains)[number]

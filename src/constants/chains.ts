@@ -17,28 +17,46 @@ import {
 import { addChainModifiers } from "@/utils/chainModifiers"
 import { match, P } from "ts-pattern"
 
-const chainGroup = match({
-  hostname: window?.location?.hostname,
-  isDev: import.meta.env.DEV,
-})
-  .with(
-    {
-      isDev: true,
-    },
-    {
-      hostname: P.union(
-        P.string.startsWith("sepolia"),
-        P.string.includes("pages.dev"),
-        P.string.startsWith("localhost"),
-        P.string.startsWith("127.0.0.1"),
-      ),
-    },
-    () => "sepolia",
-  )
-  .with({ hostname: P.string.startsWith("primary") }, () => "mainnet")
-  .otherwise(() => "mainnet")
+const getChainGroup = () => {
+  const hostname = typeof window !== "undefined" ? window.location.hostname : ""
+  const isDev = import.meta.env?.DEV ?? false
+  
+  return match({ hostname, isDev })
+    .with(
+      {
+        isDev: true,
+      },
+      {
+        hostname: P.union(
+          P.string.startsWith("sepolia"),
+          P.string.includes("pages.dev"),
+          P.string.startsWith("localhost"),
+          P.string.startsWith("127.0.0.1"),
+        ),
+      },
+      () => "sepolia" as const,
+    )
+    .with({ hostname: P.string.startsWith("primary") }, () => "mainnet" as const)
+    .otherwise(() => "mainnet" as const)
+}
 
+const chainGroup = getChainGroup()
 const isTestnet = chainGroup === "sepolia"
+
+// Create properly typed chain configurations
+const ethereumChain = isTestnet ? sepoliaViem : mainnetViem
+const baseChain = isTestnet ? baseSepoliaViem : baseViem
+const arbitrumChain = isTestnet ? arbitrumSepoliaViem : arbitrumViem
+const optimismChain = isTestnet ? optimismSepoliaViem : optimismViem
+const lineaChain = isTestnet ? lineaSepoliaViem : lineaViem
+const scrollChain = isTestnet ? scrollSepoliaViem : scrollViem
+
+export const ethereum = addChainModifiers(addEnsContracts(ethereumChain))
+export const base = addChainModifiers(baseChain)
+export const arbitrum = addChainModifiers(arbitrumChain)
+export const optimism = addChainModifiers(optimismChain)
+export const linea = addChainModifiers(lineaChain)
+export const scroll = addChainModifiers(scrollChain)
 
 export type ChainWithDetails =
   | typeof ethereum
@@ -47,21 +65,6 @@ export type ChainWithDetails =
   | typeof optimism
   | typeof linea
   | typeof scroll
-
-export const ethereum = addChainModifiers(
-  addEnsContracts(isTestnet ? sepoliaViem : mainnetViem),
-)
-export const base = addChainModifiers(isTestnet ? baseSepoliaViem : baseViem)
-export const arbitrum = addChainModifiers(
-  isTestnet ? arbitrumSepoliaViem : arbitrumViem,
-)
-export const optimism = addChainModifiers(
-  isTestnet ? optimismSepoliaViem : optimismViem,
-)
-export const linea = addChainModifiers(isTestnet ? lineaSepoliaViem : lineaViem)
-export const scroll = addChainModifiers(
-  isTestnet ? scrollSepoliaViem : scrollViem,
-)
 
 export const l2Chains = [base, arbitrum, optimism, linea, scroll] as const
 

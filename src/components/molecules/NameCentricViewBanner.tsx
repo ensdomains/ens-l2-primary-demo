@@ -1,5 +1,5 @@
-import { RegistrationStatus } from "@/hooks/useRegistrationStatus"
-import { Banner, EthSVG } from "@ensdomains/thorin"
+import type { RegistrationStatus } from "@/hooks/useRegistrationStatus"
+import { Banner } from "@ensdomains/thorin"
 import { match, P } from "ts-pattern"
 import { ethereum } from "@/constants/chains"
 
